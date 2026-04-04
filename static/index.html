@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrintGuard — Art Protection Technology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #0f0e0d;
+  --ink-light: #3a3834;
+  --ink-muted: #7a776f;
+  --paper: #f7f4ef;
+  --paper-warm: #efe9df;
+  --paper-mid: #e4ddd2;
+  --accent: #c8531a;
+  --accent-light: #e8734a;
+  --border: rgba(15,14,13,0.12);
+  --border-strong: rgba(15,14,13,0.25);
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-mono: 'DM Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-display); background: var(--paper); color: var(--ink); font-size: 18px; line-height: 1.6; overflow-x: hidden; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 3rem; height: 64px;
+  background: rgba(247,244,239,0.92); backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-logo { font-family: var(--font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); text-decoration: none; }
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 2.5rem; align-items: center; }
+.nav-links a { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--ink); }
+.lang-toggle { display: flex; border: 0.5px solid var(--border-strong); border-radius: 3px; overflow: hidden; }
+.lang-btn { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; padding: 4px 10px; background: transparent; border: none; cursor: pointer; color: var(--ink-muted); transition: all 0.15s; }
+.lang-btn.active { background: var(--ink); color: var(--paper); }
+.nav-cta { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 20px; background: var(--accent); color: #fff; border: none; cursor: pointer; border-radius: 2px; text-decoration: none; transition: background 0.2s; }
+.nav-cta:hover { background: var(--accent-light); }
+
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 8rem 3rem 4rem; position: relative; overflow: hidden; }
+.hero-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 80px 80px; mask-image: radial-gradient(ellipse 80% 60% at 60% 50%, black 30%, transparent 80%); }
+.hero-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s 0.2s forwards; }
+.hero h1 { font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 300; line-height: 1.0; letter-spacing: -0.02em; max-width: 800px; opacity: 0; animation: fadeUp 0.8s 0.35s forwards; }
+.hero h1 em { font-style: italic; color: var(--ink-light); }
+.hero-sub { margin-top: 2rem; font-size: 1.15rem; color: var(--ink-muted); max-width: 480px; font-weight: 300; line-height: 1.7; opacity: 0; animation: fadeUp 0.8s 0.5s forwards; }
+.hero-actions { display: flex; gap: 1rem; align-items: center; margin-top: 2.5rem; opacity: 0; animation: fadeUp 0.8s 0.65s forwards; }
+.btn-primary { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 32px; background: var(--ink); color: var(--paper); border: none; cursor: pointer; border-radius: 2px; transition: background 0.2s; }
+.btn-primary:hover { background: var(--ink-light); }
+.btn-ghost { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 32px; background: transparent; color: var(--ink-muted); border: 0.5px solid var(--border-strong); cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+.btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+.hero-badge { position: absolute; right: 4rem; top: 50%; transform: translateY(-50%); width: 180px; height: 180px; border: 0.5px solid var(--border-strong); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: rotate 30s linear infinite; opacity: 0.4; }
+.hero-badge-inner { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-muted); line-height: 1.8; }
+@keyframes rotate { from { transform: translateY(-50%) rotate(0deg); } to { transform: translateY(-50%) rotate(360deg); } }
+
+.stats-bar { background: var(--ink); color: var(--paper); padding: 1.5rem 3rem; display: flex; gap: 4rem; align-items: center; overflow: hidden; }
+.stat { text-align: center; }
+.stat-num { font-family: var(--font-display); font-size: 2.2rem; font-weight: 300; line-height: 1; }
+.stat-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(247,244,239,0.5); margin-top: 4px; }
+.stats-divider { width: 0.5px; height: 40px; background: rgba(247,244,239,0.2); }
+
+.section { padding: 6rem 3rem; }
+.section-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+.section h2 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 300; line-height: 1.15; max-width: 600px; margin-bottom: 3rem; }
+.section h2 em { font-style: italic; }
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem; }
+.how-card { background: var(--paper-warm); padding: 2.5rem 2rem; border: 0.5px solid var(--border); }
+.how-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 1.5rem; }
+.how-card h3 { font-size: 1.4rem; font-weight: 400; margin-bottom: 0.75rem; line-height: 1.2; }
+.how-card p { font-size: 0.9rem; color: var(--ink-muted); line-height: 1.7; font-family: var(--font-mono); font-weight: 300; }
+
+.science { background: var(--paper-mid); padding: 6rem 3rem; }
+.science-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+.science-visual { position: relative; height: 320px; }
+.pixel-demo { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(20, 1fr); grid-template-rows: repeat(12, 1fr); gap: 2px; border: 0.5px solid var(--border-strong); padding: 12px; background: var(--paper); }
+.pixel-cell { border-radius: 1px; transition: background 0.3s; }
+
+.pricing { padding: 6rem 3rem; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem; }
+.price-card { background: var(--paper-warm); border: 0.5px solid var(--border); padding: 2.5rem 2rem; }
+.price-card.featured { background: var(--ink); color: var(--paper); }
+.price-card.featured .price-label, .price-card.featured .price-desc, .price-card.featured .price-feature { color: rgba(247,244,239,0.6); }
+.price-card.featured .price-divider { background: rgba(247,244,239,0.15); }
+.price-badge { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; background: var(--accent); color: #fff; border-radius: 2px; display: inline-block; margin-bottom: 1.5rem; }
+.price-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 0.5rem; }
+.price-amount { font-size: 3rem; font-weight: 300; line-height: 1; margin-bottom: 0.25rem; }
+.price-amount sup { font-size: 1.2rem; vertical-align: super; }
+.price-period { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); letter-spacing: 0.1em; }
+.price-divider { height: 0.5px; background: var(--border); margin: 1.5rem 0; }
+.price-desc { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); line-height: 1.7; margin-bottom: 1.5rem; }
+.price-features { list-style: none; margin-bottom: 2rem; }
+.price-feature { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); padding: 6px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.price-feature::before { content: '→'; color: var(--accent); font-size: 10px; flex-shrink: 0; }
+.btn-plan { width: 100%; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 12px; background: transparent; border: 0.5px solid currentColor; cursor: pointer; border-radius: 2px; transition: all 0.2s; color: inherit; }
+.price-card.featured .btn-plan { background: var(--accent); border-color: var(--accent); color: #fff; }
+.price-card.featured .btn-plan:hover { background: var(--accent-light); }
+.btn-plan:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+#tool-section { padding: 6rem 3rem; background: var(--paper-mid); min-height: 80vh; }
+.tool-header { margin-bottom: 3rem; }
+
+.login-wall { max-width: 480px; margin: 0 auto; text-align: center; padding: 3rem 2.5rem; border: 0.5px solid var(--border-strong); background: var(--paper); }
+.login-wall h3 { font-size: 1.8rem; font-weight: 300; margin-bottom: 0.5rem; }
+.login-wall p { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); margin-bottom: 2rem; line-height: 1.7; }
+.login-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-muted); }
+.form-input { padding: 10px 14px; border: 0.5px solid var(--border-strong); background: var(--paper-warm); font-family: var(--font-mono); font-size: 13px; color: var(--ink); border-radius: 2px; outline: none; transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--accent); }
+.btn-login { margin-top: 0.5rem; width: 100%; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px; background: var(--ink); color: var(--paper); border: none; cursor: pointer; border-radius: 2px; transition: background 0.2s; }
+.btn-login:hover { background: var(--accent); }
+.btn-login:disabled { opacity: 0.4; cursor: default; }
+.login-note { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); margin-top: 1rem; text-align: center; }
+.login-demo-hint { font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-top: 0.5rem; text-align: center; cursor: pointer; text-decoration: underline; }
+
+#tool-app { display: none; }
+.tool-topbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--ink); color: var(--paper); border-radius: 3px 3px 0 0; }
+.tool-user { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: rgba(247,244,239,0.6); }
+.tool-user span { color: var(--paper); }
+.btn-logout { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; background: transparent; border: 0.5px solid rgba(247,244,239,0.3); color: rgba(247,244,239,0.6); padding: 5px 12px; border-radius: 2px; cursor: pointer; transition: all 0.15s; }
+.btn-logout:hover { color: var(--paper); border-color: var(--paper); }
+.usage-bar-wrap { background: rgba(0,0,0,0.25); padding: 10px 1.5rem; display: flex; align-items: center; gap: 1rem; border-radius: 0; }
+.usage-bar-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; }
+.usage-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.4s; }
+.usage-bar-fill.warning { background: #e67e22; }
+.usage-bar-fill.danger  { background: #e74c3c; }
+.usage-label { font-family: var(--font-mono); font-size: 10px; color: rgba(247,244,239,0.55); white-space: nowrap; }
+.usage-label strong { color: var(--paper); }
+.upgrade-banner { background: var(--accent); color: white; padding: 10px 1.5rem; font-family: var(--font-mono); font-size: 11px; display: none; align-items: center; justify-content: space-between; }
+.upgrade-banner a { color: white; font-weight: 500; text-decoration: underline; cursor: pointer; }
+.tool-body { background: var(--paper); border: 0.5px solid var(--border-strong); border-top: none; padding: 2rem; border-radius: 0 0 3px 3px; }
+
+.dropzone { border: 1.5px dashed var(--border-strong); border-radius: 3px; padding: 3rem; text-align: center; cursor: pointer; background: var(--paper-warm); transition: background 0.15s; }
+.dropzone:hover, .dropzone.dragover { background: var(--paper-mid); border-color: var(--accent); }
+.dropzone-icon { font-size: 2rem; color: var(--ink-muted); margin-bottom: 0.75rem; }
+.dropzone-title { font-size: 1rem; font-weight: 400; }
+.dropzone-sub { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); margin-top: 4px; }
+
+.tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+.tgrid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+.t-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px; }
+.t-select { width: 100%; padding: 9px 12px; border: 0.5px solid var(--border-strong); background: var(--paper-warm); font-family: var(--font-mono); font-size: 12px; color: var(--ink); border-radius: 2px; outline: none; }
+.slider-row { display: flex; align-items: center; gap: 10px; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.slider-val { font-family: var(--font-mono); font-size: 12px; font-weight: 500; min-width: 28px; text-align: right; }
+.metric-card { background: var(--paper-warm); border: 0.5px solid var(--border); padding: 1rem; border-radius: 2px; }
+.metric-num { font-size: 1.4rem; font-weight: 300; line-height: 1; }
+.metric-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); letter-spacing: 0.1em; margin-top: 4px; text-transform: uppercase; }
+.eff-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 8px; }
+.eff-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s; }
+.preview-box { border: 0.5px solid var(--border); overflow: hidden; border-radius: 2px; }
+.preview-box img { width: 100%; display: block; max-height: 300px; object-fit: contain; background: var(--paper-warm); }
+.preview-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); padding: 6px 10px; background: var(--paper-warm); display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.08em; }
+.badge { font-size: 9px; padding: 2px 8px; border-radius: 2px; font-weight: 500; letter-spacing: 0.08em; }
+.badge-ok { background: #d4edda; color: #1a5e2a; }
+.badge-warn { background: #fdebd0; color: #7d3c00; }
+
+.progress-wrap { margin: 1.5rem 0; display: none; }
+.progress-bar-bg { height: 3px; background: var(--border); border-radius: 2px; }
+.progress-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.4s; }
+.progress-label { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); margin-top: 6px; }
+
+.t-status { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); margin: 0.75rem 0; min-height: 16px; }
+.t-status.success { color: #1a5e2a; }
+.t-status.error { color: #c0392b; }
+.btn-apply { width: 100%; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px; background: var(--ink); color: var(--paper); border: none; cursor: pointer; border-radius: 2px; transition: background 0.2s; }
+.btn-apply:hover { background: var(--accent); }
+.btn-apply:disabled { opacity: 0.3; cursor: default; background: var(--ink); }
+.btn-dl { width: 100%; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 12px; background: transparent; color: var(--ink); border: 0.5px solid var(--border-strong); cursor: pointer; border-radius: 2px; transition: all 0.2s; margin-top: 8px; }
+.btn-dl:hover { background: var(--paper-mid); }
+.info-strip { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); padding: 10px 14px; border-left: 2px solid var(--accent); background: var(--paper-warm); line-height: 1.65; margin: 1rem 0; }
+.timing-badge { font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-top: 4px; }
+
+footer { background: var(--ink); color: var(--paper); padding: 3rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3rem; }
+.footer-brand { font-size: 1.5rem; font-weight: 300; letter-spacing: -0.01em; }
+.footer-brand span { color: var(--accent); }
+.footer-tagline { font-family: var(--font-mono); font-size: 10px; color: rgba(247,244,239,0.4); margin-top: 8px; letter-spacing: 0.1em; }
+.footer-col h4 { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(247,244,239,0.4); margin-bottom: 1rem; }
+.footer-col a { display: block; font-family: var(--font-mono); font-size: 12px; color: rgba(247,244,239,0.65); text-decoration: none; margin-bottom: 8px; transition: color 0.15s; }
+.footer-col a:hover { color: var(--paper); }
+.footer-bottom { grid-column: 1/-1; border-top: 0.5px solid rgba(247,244,239,0.1); padding-top: 1.5rem; font-family: var(--font-mono); font-size: 10px; color: rgba(247,244,239,0.3); display: flex; justify-content: space-between; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+body.lang-nl [data-en] { display: none !important; }
+body.lang-en [data-nl] { display: none !important; }
+.hidden { display: none !important; }
+
+@media (max-width: 900px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .hero { padding: 7rem 1.5rem 3rem; }
+  .hero-badge { display: none; }
+  .how-grid, .pricing-grid, .tgrid, .tgrid3 { grid-template-columns: 1fr; }
+  .science-inner { grid-template-columns: 1fr; }
+  .section, .pricing, .science, #tool-section { padding: 4rem 1.5rem; }
+  footer { grid-template-columns: 1fr; gap: 2rem; }
+  .stats-bar { gap: 2rem; flex-wrap: wrap; }
+}
+</style>
+<link rel="alternate" hreflang="nl" href="https://www.printguardtool.com/nl/">
+<link rel="alternate" hreflang="en" href="https://www.printguardtool.com/">
+<link rel="alternate" hreflang="x-default" href="https://www.printguardtool.com/">
+</head>
+<body class="lang-nl">
+
+<nav>
+  <a class="nav-logo" href="#">Print<span>Guard</span></a>
+  <div class="nav-links">
+    <a href="#how"><span data-nl>Hoe het werkt</span><span data-en>How it works</span></a>
+    <a href="#pricing"><span data-nl>Tarieven</span><span data-en>Pricing</span></a>
+    <a href="#tool-section"><span data-nl>Inloggen</span><span data-en>Sign in</span></a>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('nl')">NL</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <a href="#tool-section" class="nav-cta"><span data-nl>Probeer nu</span><span data-en>Try now</span></a>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow">
+    <span data-nl>Kunstbescherming · Onzichtbare technologie</span>
+    <span data-en>Art Protection · Invisible Technology</span>
+  </div>
+  <h1>
+    <span data-nl>Bescherm uw kunst.<br><em>Onzichtbaar.</em><br>Onbreekbaar.</span>
+    <span data-en>Protect your art.<br><em>Invisible.</em><br>Unbreakable.</span>
+  </h1>
+  <p class="hero-sub">
+    <span data-nl>PrintGuard voegt onzichtbare pixel-patronen toe aan uw schilderijen die elke poging tot printen saboteren — zonder dat u of uw kopers het verschil zien.</span>
+    <span data-en>PrintGuard embeds invisible pixel patterns into your artwork that sabotage any printing attempt — without you or your buyers ever noticing the difference.</span>
+  </p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="document.getElementById('tool-section').scrollIntoView({behavior:'smooth'})">
+      <span data-nl>Bescherming toepassen</span><span data-en>Apply protection</span>
+    </button>
+    <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
+      <span data-nl>Meer leren</span><span data-en>Learn more</span>
+    </button>
+  </div>
+  <div class="hero-badge"><div class="hero-badge-inner">PRINT · GUARD · ART · PROTECTION · INVISIBLE · TECH ·</div></div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">99<small style="font-size:1.2rem">%</small></div><div class="stat-label"><span data-nl>Printers verstoord</span><span data-en>Printers disrupted</span></div></div>
+  <div class="stats-divider"></div>
+  <div class="stat"><div class="stat-num">&lt;4<small style="font-size:1.2rem">%</small></div><div class="stat-label"><span data-nl>Zichtbare afwijking</span><span data-en>Visible deviation</span></div></div>
+  <div class="stats-divider"></div>
+  <div class="stat"><div class="stat-num">0</div><div class="stat-label"><span data-nl>Server uploads bewaard</span><span data-en>Server uploads stored</span></div></div>
+  <div class="stats-divider"></div>
+  <div class="stat"><div class="stat-num">10K<small style="font-size:1.2rem">px</small></div><div class="stat-label"><span data-nl>Max resolutie</span><span data-en>Max resolution</span></div></div>
+</div>
+
+<section class="section" id="how">
+  <div class="section-label"><span data-nl>Hoe het werkt</span><span data-en>How it works</span></div>
+  <h2><span data-nl>Wetenschap die uw kunst <em>bewaakt</em></span><span data-en>Science that <em>guards</em> your art</span></h2>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">01</div>
+      <h3><span data-nl>Upload uw werk</span><span data-en>Upload your work</span></h3>
+      <p><span data-nl>Uw afbeelding wordt verwerkt op onze beveiligde server en direct verwijderd. Nooit opgeslagen.</span><span data-en>Your image is processed on our secure server and immediately deleted. Never stored.</span></p>
+    </div>
+    <div class="how-card">
+      <div class="how-num">02</div>
+      <h3><span data-nl>Patroon injecteren</span><span data-en>Pattern injection</span></h3>
+      <p><span data-nl>NumPy verwerkt 300 miljoen pixels in seconden. Channel-split plus hoge-frequentie ruis — onzichtbaar voor het oog.</span><span data-en>NumPy processes 300 million pixels in seconds. Channel-split plus high-frequency noise — invisible to the eye.</span></p>
+    </div>
+    <div class="how-card">
+      <div class="how-num">03</div>
+      <h3><span data-nl>Printer verstoord</span><span data-en>Printer disrupted</span></h3>
+      <p><span data-nl>Het patroon interfereert met raster-algoritmes van inkjet tot offset druk. Afdrukken mislukken, uw origineel blijft uniek.</span><span data-en>The pattern interferes with raster algorithms from inkjet to offset press. Prints fail, your original stays unique.</span></p>
+    </div>
+  </div>
+</section>
+
+<div class="science">
+  <div class="science-inner">
+    <div>
+      <div class="section-label"><span data-nl>De technologie</span><span data-en>The technology</span></div>
+      <h2 style="max-width:100%"><span data-nl>Uw ogen zien het niet. De printer <em>des te meer.</em></span><span data-en>Your eyes don't see it. The printer <em>feels it all the more.</em></span></h2>
+      <p style="font-family:var(--font-mono);font-size:12px;color:var(--ink-muted);line-height:1.8;max-width:400px;">
+        <span data-nl>Een scherm toont pixels als lichtpuntjes — een afwijking van ±10 op 255 is onzichtbaar. Een printer berekent raster-dots per kleurzone. Het channel-split patroon (R↑ G↓ tegelijk) liegt tegen de CMYK-scheiding: kleurverschuiving, vlekken of wazigheid.</span>
+        <span data-en>A screen shows pixels as light points — ±10 deviation out of 255 is invisible. A printer calculates halftone dots per color zone. The channel-split pattern (R↑ G↓ simultaneously) deceives CMYK separation: color shift, blotching or blur.</span>
+      </p>
+    </div>
+    <div class="science-visual">
+      <div class="pixel-demo" id="pixelDemo"></div>
+    </div>
+  </div>
+</div>
+
+<section class="pricing" id="pricing">
+  <div class="section-label"><span data-nl>Tarieven</span><span data-en>Pricing</span></div>
+  <h2><span data-nl>Eenvoudig, <em>transparant</em></span><span data-en>Simple, <em>transparent</em></span></h2>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-label">Starter</div>
+      <div class="price-amount"><sup>€</sup>9</div>
+      <div class="price-period"><span data-nl>per maand</span><span data-en>per month</span></div>
+      <div class="price-divider"></div>
+      <p class="price-desc"><span data-nl>Voor individuele kunstenaars die online verkopen.</span><span data-en>For individual artists selling online.</span></p>
+      <ul class="price-features">
+        <li class="price-feature"><span data-nl>50 afbeeldingen/maand</span><span data-en>50 images/month</span></li>
+        <li class="price-feature"><span data-nl>Tot 4.000px breedte</span><span data-en>Up to 4,000px wide</span></li>
+        <li class="price-feature"><span data-nl>3 patroon algoritmes</span><span data-en>3 pattern algorithms</span></li>
+        <li class="price-feature">PNG export</li>
+      </ul>
+      <button class="btn-plan"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
+    </div>
+    <div class="price-card featured">
+      <div class="price-badge"><span data-nl>Populairst</span><span data-en>Most popular</span></div>
+      <div class="price-label">Professional</div>
+      <div class="price-amount"><sup>€</sup>24</div>
+      <div class="price-period"><span data-nl>per maand</span><span data-en>per month</span></div>
+      <div class="price-divider"></div>
+      <p class="price-desc"><span data-nl>Voor serieuze kunstenaars en galerijen.</span><span data-en>For serious artists and galleries.</span></p>
+      <ul class="price-features">
+        <li class="price-feature"><span data-nl>Onbeperkte afbeeldingen</span><span data-en>Unlimited images</span></li>
+        <li class="price-feature"><span data-nl>Tot 12.000px breedte</span><span data-en>Up to 12,000px wide</span></li>
+        <li class="price-feature"><span data-nl>Alle algoritmes + combined</span><span data-en>All algorithms + combined</span></li>
+        <li class="price-feature">CMYK channel-split</li>
+        <li class="price-feature"><span data-nl>Batch verwerking</span><span data-en>Batch processing</span></li>
+      </ul>
+      <button class="btn-plan"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
+    </div>
+    <div class="price-card">
+      <div class="price-label">Studio</div>
+      <div class="price-amount"><sup>€</sup>79</div>
+      <div class="price-period"><span data-nl>per maand</span><span data-en>per month</span></div>
+      <div class="price-divider"></div>
+      <p class="price-desc"><span data-nl>Voor platformen en galerijen die anderen beschermen.</span><span data-en>For platforms and galleries protecting others.</span></p>
+      <ul class="price-features">
+        <li class="price-feature">API <span data-nl>toegang</span><span data-en>access</span></li>
+        <li class="price-feature">White-label <span data-nl>optie</span><span data-en>option</span></li>
+        <li class="price-feature"><span data-nl>Prioriteit support</span><span data-en>Priority support</span></li>
+        <li class="price-feature">SLA <span data-nl>garantie</span><span data-en>guarantee</span></li>
+      </ul>
+      <button class="btn-plan"><span data-nl>Contact opnemen</span><span data-en>Contact us</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="tool-section">
+  <div class="tool-header">
+    <div class="section-label"><span data-nl>Leden dashboard</span><span data-en>Member dashboard</span></div>
+    <h2><span data-nl>Uw <em>beveiligingstool</em></span><span data-en>Your <em>protection tool</em></span></h2>
+  </div>
+
+  <div id="loginWall" class="login-wall">
+    <h3><span data-nl>Inloggen</span><span data-en>Sign in</span></h3>
+    <p><span data-nl>Toegang tot PrintGuard is exclusief voor leden.</span><span data-en>Access to PrintGuard is exclusive to members.</span></p>
+    <div class="login-form">
+      <div class="form-field">
+        <label class="form-label"><span data-nl>E-mailadres</span><span data-en>Email address</span></label>
+        <input class="form-input" type="email" id="loginEmail" placeholder="naam@domein.nl">
+      </div>
+      <div class="form-field">
+        <label class="form-label"><span data-nl>Wachtwoord</span><span data-en>Password</span></label>
+        <input class="form-input" type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn-login" id="loginBtn" onclick="doLogin()">
+        <span data-nl>Inloggen</span><span data-en>Sign in</span>
+      </button>
+    </div>
+    <p class="login-note"><span data-nl>Nog geen account? Kies een abonnement hierboven.</span><span data-en>No account yet? Choose a plan above.</span></p>
+    <p class="login-demo-hint" onclick="fillDemo()"><span data-nl>→ Gebruik demo-account om te testen</span><span data-en>→ Use demo account to test</span></p>
+    <p id="loginErr" style="font-family:var(--font-mono);font-size:11px;color:#c0392b;margin-top:8px;display:none;">
+      <span data-nl>Onjuiste gegevens. Probeer: demo@printguardtool.com / demo123</span>
+      <span data-en>Incorrect credentials. Try: demo@printguardtool.com / demo123</span>
+    </p>
+  </div>
+
+  <div id="tool-app">
+    <div class="tool-topbar">
+      <span class="tool-user">
+        <span data-nl>Ingelogd als</span><span data-en>Signed in as</span>
+        <span id="userNameDisplay">—</span>
+        &nbsp;·&nbsp;
+        <span id="planBadge" style="color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;"></span>
+      </span>
+      <button class="btn-logout" onclick="doLogout()"><span data-nl>Uitloggen</span><span data-en>Sign out</span></button>
+    </div>
+
+    <!-- Gebruiksbalk -->
+    <div class="usage-bar-wrap" id="usageBarWrap">
+      <div class="usage-bar-bg"><div class="usage-bar-fill" id="usageBarFill" style="width:0%"></div></div>
+      <span class="usage-label" id="usageLabel">—</span>
+    </div>
+
+    <!-- Upgrade banner (verschijnt bij limiet bereikt) -->
+    <div class="upgrade-banner" id="upgradeBanner">
+      <span id="upgradeBannerText"></span>
+      <a onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">
+        <span data-nl>Upgraden →</span><span data-en>Upgrade →</span>
+      </a>
+    </div>
+    <div class="tool-body">
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept="image/*" style="display:none">
+        <div class="dropzone-icon">↑</div>
+        <div class="dropzone-title"><span data-nl>Sleep afbeelding hierheen of klik</span><span data-en>Drop image here or click</span></div>
+        <div class="dropzone-sub"><span data-nl>PNG · JPG · WEBP — tot 12.000px, verwerkt op de server</span><span data-en>PNG · JPG · WEBP — up to 12,000px, processed server-side</span></div>
+      </div>
+
+      <div id="toolMain" class="hidden">
+        <div class="tgrid3">
+          <div class="metric-card"><div class="metric-num" id="mDim">—</div><div class="metric-lbl"><span data-nl>Afmetingen</span><span data-en>Dimensions</span></div></div>
+          <div class="metric-card"><div class="metric-num" id="mMp">—</div><div class="metric-lbl"><span data-nl>Megapixels</span><span data-en>Megapixels</span></div></div>
+          <div class="metric-card"><div class="metric-num" id="mEff">—</div><div class="metric-lbl"><span data-nl>Effectiviteit</span><span data-en>Effectiveness</span></div><div class="eff-bar"><div class="eff-fill" id="mEffBar" style="width:0%"></div></div></div>
+        </div>
+
+        <div class="info-strip" id="resAdvice"></div>
+
+        <div class="tgrid">
+          <div>
+            <div class="t-label"><span data-nl>Patroon type</span><span data-en>Pattern type</span></div>
+            <select class="t-select" id="patternType">
+              <option value="hf"><span data-nl>Hoge frequentie ruis</span><span data-en>High frequency noise</span></option>
+              <option value="checker"><span data-nl>Schaakbord</span><span data-en>Checkerboard</span></option>
+              <option value="stripes"><span data-nl>Diagonale strepen</span><span data-en>Diagonal stripes</span></option>
+              <option value="channel">Channel-split (CMYK)</option>
+              <option value="combined" selected><span data-nl>Volledig gecombineerd</span><span data-en>Fully combined</span></option>
+            </select>
+          </div>
+          <div>
+            <div class="t-label"><span data-nl>Doelprinter</span><span data-en>Target printer</span></div>
+            <select class="t-select" id="printerTarget">
+              <option value="inkjet">Inkjet</option>
+              <option value="laser">Laser</option>
+              <option value="offset" selected><span data-nl>Offset (professioneel)</span><span data-en>Offset (professional)</span></option>
+              <option value="all"><span data-nl>Alle methodes</span><span data-en>All methods</span></option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin:1rem 0">
+          <div class="t-label"><span data-nl>Basissterkte</span><span data-en>Base strength</span> <span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-muted);font-weight:300;text-transform:none;letter-spacing:0;">(<span data-nl>onzichtbaarheidsgrens ≈12</span><span data-en>invisibility threshold ≈12</span>)</span></div>
+          <div class="slider-row"><input type="range" id="strength" min="3" max="45" step="1" value="18"><span class="slider-val" id="strengthVal">18</span></div>
+        </div>
+        <div style="margin:1rem 0">
+          <div class="t-label"><span data-nl>Channel-split intensiteit</span><span data-en>Channel-split intensity</span></div>
+          <div class="slider-row"><input type="range" id="channelSplit" min="0" max="30" step="1" value="12"><span class="slider-val" id="channelVal">12</span></div>
+        </div>
+        <div style="margin:1rem 0">
+          <div class="t-label"><span data-nl>Frequentie variatie</span><span data-en>Frequency variation</span></div>
+          <div class="slider-row"><input type="range" id="freqVar" min="1" max="8" step="1" value="3"><span class="slider-val" id="freqVal">3</span></div>
+        </div>
+
+        <div class="tgrid" id="previewsWrap" style="display:none">
+          <div class="preview-box">
+            <div class="preview-lbl"><span data-nl>Origineel</span><span data-en>Original</span> <span class="badge badge-warn"><span data-nl>onbeschermd</span><span data-en>unprotected</span></span></div>
+            <img id="previewOrig" src="" alt="">
+          </div>
+          <div class="preview-box">
+            <div class="preview-lbl"><span data-nl>Beschermd</span><span data-en>Protected</span> <span class="badge badge-ok" id="protBadge" style="display:none"><span data-nl>verwerkt</span><span data-en>processed</span></span></div>
+            <img id="previewProt" src="" alt="" style="opacity:0.3;filter:grayscale(1)">
+          </div>
+        </div>
+
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+          <div class="progress-label" id="progressLabel"><span data-nl>Verwerken op server...</span><span data-en>Processing on server...</span></div>
+        </div>
+
+        <p class="t-status" id="tStatus"></p>
+        <div class="timing-badge hidden" id="timingBadge"></div>
+
+        <button class="btn-apply" id="applyBtn" onclick="applyProtection()">
+          <span data-nl>Bescherming toepassen</span><span data-en>Apply protection</span>
+        </button>
+        <button class="btn-dl hidden" id="dlBtn" onclick="downloadResult()">
+          <span data-nl>Downloaden als PNG</span><span data-en>Download as PNG</span>
+        </button>
+
+        <!-- CERTIFICAAT SECTIE -->
+        <div id="certSection" class="hidden" style="margin-top:2rem; border-top: 0.5px solid var(--border); padding-top:1.5rem;">
+          <div class="t-label" style="margin-bottom:1rem;">
+            <span data-nl>Registratiecertificaat aanmaken</span>
+            <span data-en>Create registration certificate</span>
+          </div>
+          <div class="info-strip" style="margin-bottom:1rem;">
+            <span data-nl>Leg vast dat dit kunstwerk van u is op dit exacte moment. Het certificaat bevat een SHA-256 digitale vingerafdruk, tijdstempel en uw naam — juridisch bruikbaar als prioriteitsbewijs bij een geschil.</span>
+            <span data-en>Record that this artwork is yours at this exact moment. The certificate contains a SHA-256 digital fingerprint, timestamp and your name — legally usable as priority evidence in a dispute.</span>
+          </div>
+          <div class="tgrid" style="margin-bottom:1rem;">
+            <div class="form-field">
+              <label class="t-label"><span data-nl>Uw naam</span><span data-en>Your name</span></label>
+              <input class="form-input" type="text" id="certName" placeholder="Jan van der Berg" style="padding:9px 12px; border:0.5px solid var(--border-strong); background:var(--paper-warm); font-family:var(--font-mono); font-size:12px; color:var(--ink); border-radius:2px; outline:none; width:100%;">
+            </div>
+            <div class="form-field">
+              <label class="t-label"><span data-nl>Titel van het kunstwerk</span><span data-en>Title of the artwork</span></label>
+              <input class="form-input" type="text" id="certTitle" placeholder="Zonsondergang boven de Maas" style="padding:9px 12px; border:0.5px solid var(--border-strong); background:var(--paper-warm); font-family:var(--font-mono); font-size:12px; color:var(--ink); border-radius:2px; outline:none; width:100%;">
+            </div>
+          </div>
+          <button class="btn-dl" id="certBtn" onclick="downloadCertificate()" style="border-color:var(--accent); color:var(--accent);">
+            <span data-nl>Certificaat downloaden (PDF)</span>
+            <span data-en>Download certificate (PDF)</span>
+          </button>
+          <p class="t-status hidden" id="certStatus"></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-brand">Print<span>Guard</span></div>
+    <div class="footer-tagline"><span data-nl>Kunstbescherming voor de digitale wereld</span><span data-en>Art protection for the digital world</span></div>
+  </div>
+  <div class="footer-col">
+    <h4><span data-nl>Product</span><span data-en>Product</span></h4>
+    <a href="#how"><span data-nl>Hoe het werkt</span><span data-en>How it works</span></a>
+    <a href="#pricing"><span data-nl>Tarieven</span><span data-en>Pricing</span></a>
+    <a href="#tool-section"><span data-nl>Dashboard</span><span data-en>Dashboard</span></a>
+  </div>
+  <div class="footer-col">
+    <h4><span data-nl>Juridisch</span><span data-en>Legal</span></h4>
+    <a href="#"><span data-nl>Privacybeleid</span><span data-en>Privacy policy</span></a>
+    <a href="#"><span data-nl>Gebruiksvoorwaarden</span><span data-en>Terms of use</span></a>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 PrintGuard</span>
+    <span><span data-nl>Alle rechten voorbehouden</span><span data-en>All rights reserved</span></span>
+  </div>
+</footer>
+
+<script>
+// ── Language ──────────────────────────────────────────────────────────────
+function setLang(lang) {
+  document.body.className = 'lang-' + lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick*="${lang}"]`).classList.add('active');
+  // URL aanpassen zonder page reload
+  const isNl = lang === 'nl';
+  const target = isNl ? '/nl/' : '/';
+  if (window.location.pathname !== target) {
+    history.pushState({lang}, '', target);
+  }
+}
+function getLang() { return document.body.classList.contains('lang-nl') ? 'nl' : 'en'; }
+
+// Taal instellen op basis van URL-pad
+(function() {
+  const path = window.location.pathname;
+  if (path === '/' || path === '') {
+    setLang('en');
+  } else if (path.startsWith('/nl')) {
+    setLang('nl');
+  }
+  // Terug-knop in browser volgen
+  window.addEventListener('popstate', function(e) {
+    if (e.state && e.state.lang) setLang(e.state.lang);
+  });
+})();
+
+// ── Pixel demo animation ──────────────────────────────────────────────────
+(function() {
+  const demo = document.getElementById('pixelDemo');
+  for (let i = 0; i < 240; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'pixel-cell';
+    const b = 180 + Math.floor(Math.random() * 60);
+    cell.style.background = `rgb(${b},${b-10},${b-20})`;
+    demo.appendChild(cell);
+  }
+  setInterval(() => {
+    const cells = demo.querySelectorAll('.pixel-cell');
+    cells.forEach((c, i) => {
+      if (Math.random() < 0.07) {
+        const x = i % 20, y = Math.floor(i / 20);
+        const n = ((x + y) % 2 === 0 ? 1 : -1) * (10 + Math.random() * 15);
+        const b = 180 + Math.floor(Math.random() * 40);
+        c.style.background = `rgb(${Math.round(Math.min(255,b+n))},${Math.round(Math.min(255,b-n*0.8))},${Math.round(b-20)})`;
+      }
+    });
+  }, 120);
+})();
+
+// ── Sliders ───────────────────────────────────────────────────────────────
+['strength','channelSplit','freqVar'].forEach(id => {
+  const outIds = {strength:'strengthVal', channelSplit:'channelVal', freqVar:'freqVal'};
+  document.getElementById(id).addEventListener('input', function() {
+    document.getElementById(outIds[id]).textContent = this.value;
+  });
+});
+
+// ── Session ───────────────────────────────────────────────────────────────
+let sessionToken = null;
+let resultBlob   = null;
+let currentFile  = null;
+let currentUsage = null;
+
+function fillDemo() {
+  document.getElementById('loginEmail').value = 'demo@printguardtool.com';
+  document.getElementById('loginPass').value  = 'demo123';
+}
+
+function updateUsageBar(usage) {
+  currentUsage = usage;
+  const lang   = getLang();
+  const wrap   = document.getElementById('usageBarWrap');
+  const fill   = document.getElementById('usageBarFill');
+  const label  = document.getElementById('usageLabel');
+  const banner = document.getElementById('upgradeBanner');
+  const badge  = document.getElementById('planBadge');
+
+  // Plan badge
+  const planNames = {starter:'Starter', professional:'Professional', studio:'Studio'};
+  const billingLabel = usage.billing === 'yearly'
+    ? (lang==='nl' ? ' · Jaar' : ' · Annual')
+    : (lang==='nl' ? ' · Maand' : ' · Monthly');
+  badge.textContent = (planNames[usage.plan] || usage.plan) + billingLabel;
+
+  if (usage.unlimited) {
+    wrap.style.display  = 'none';
+    banner.style.display = 'none';
+    return;
+  }
+
+  wrap.style.display = 'flex';
+  const pct  = usage.pct || 0;
+  fill.style.width = pct + '%';
+  fill.className   = 'usage-bar-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warning' : '');
+
+  const rem  = usage.remaining;
+  const lim  = usage.limit;
+  const used = usage.used;
+
+  // Resetdatum netjes formatteren
+  let resetStr = '';
+  if (usage.next_reset) {
+    const rd = new Date(usage.next_reset);
+    const opts = {day: 'numeric', month: 'long', year: 'numeric'};
+    resetStr = rd.toLocaleDateString(lang === 'nl' ? 'nl-NL' : 'en-GB', opts);
+  }
+  const resetLabel = resetStr
+    ? (lang==='nl' ? ` · reset ${resetStr}` : ` · resets ${resetStr}`)
+    : '';
+
+  if (rem === 0) {
+    label.innerHTML = lang==='nl'
+      ? `<strong>Limiet bereikt</strong> — ${used}/${lim} uploads${resetLabel}`
+      : `<strong>Limit reached</strong> — ${used}/${lim} uploads${resetLabel}`;
+    banner.style.display = 'flex';
+    const txt = document.getElementById('upgradeBannerText');
+    txt.textContent = lang==='nl'
+      ? `Limiet bereikt (${lim} uploads). Upgrade voor meer uploads of kies Studio voor onbeperkt gebruik.`
+      : `Limit reached (${lim} uploads). Upgrade for more uploads or choose Studio for unlimited use.`;
+  } else {
+    label.innerHTML = lang==='nl'
+      ? `<strong>${rem}</strong> van ${lim} resterend${resetLabel}`
+      : `<strong>${rem}</strong> of ${lim} remaining${resetLabel}`;
+    banner.style.display = 'none';
+  }
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const btn   = document.getElementById('loginBtn');
+  const err   = document.getElementById('loginErr');
+  err.style.display = 'none';
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch('/api/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, password: pass})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      sessionToken = data.token;
+      document.getElementById('userNameDisplay').textContent = data.name;
+      document.getElementById('loginWall').style.display  = 'none';
+      document.getElementById('tool-app').style.display   = 'block';
+      updateUsageBar(data.usage);
+      initDropzone();
+    } else {
+      err.style.display = 'block';
+    }
+  } catch(e) {
+    err.style.display = 'block';
+  }
+  btn.disabled = false;
+}
+
+async function doLogout() {
+  if (sessionToken) {
+    await fetch('/api/logout', {method:'POST', headers:{'X-Token': sessionToken}}).catch(()=>{});
+  }
+  sessionToken = null;
+  document.getElementById('loginWall').style.display  = 'block';
+  document.getElementById('tool-app').style.display   = 'none';
+  document.getElementById('toolMain').classList.add('hidden');
+}
+
+// ── Dropzone ──────────────────────────────────────────────────────────────
+let dropzoneInited = false;
+function initDropzone() {
+  if (dropzoneInited) return;
+  dropzoneInited = true;
+  const fi = document.getElementById('fileInput');
+  const dz = document.getElementById('dropzone');
+  fi.addEventListener('change', e => { if(e.target.files[0]) loadFile(e.target.files[0]); });
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+}
+
+function loadFile(file) {
+  currentFile = file;
+  resultBlob = null;
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    const w = img.width, h = img.height;
+    const mp = (w * h / 1e6).toFixed(1);
+    document.getElementById('mDim').textContent = `${w}×${h}`;
+    document.getElementById('mMp').textContent = `${mp} MP`;
+    const lang = getLang();
+    let eff, effPct, advice;
+    if (w >= 8000) {
+      eff = lang==='nl'?'Uitstekend':'Excellent'; effPct = 95;
+      advice = lang==='nl'?'Perfecte resolutie — maximale effectiviteit op alle printmethodes inclusief offset.':'Perfect resolution — maximum effectiveness on all print methods including offset.';
+    } else if (w >= 4000) {
+      eff = lang==='nl'?'Goed':'Good'; effPct = 75;
+      advice = lang==='nl'?'Goede resolutie. Effectief voor inkjet, laser en digitale druk. Voor offset: 8000px+ geadviseerd.':'Good resolution. Effective for inkjet, laser and digital print. For offset: 8000px+ recommended.';
+    } else if (w >= 2000) {
+      eff = lang==='nl'?'Matig':'Moderate'; effPct = 50;
+      advice = lang==='nl'?'Werkt voor consumentenprinters. Voor professionele druk: upload 8000–10000px breed.':'Works for consumer printers. For professional print: upload 8000–10000px wide.';
+    } else {
+      eff = lang==='nl'?'Beperkt':'Limited'; effPct = 25;
+      advice = lang==='nl'?'Lage resolutie. Upload minimaal 4000px breed voor betere bescherming.':'Low resolution. Upload at least 4000px wide for better protection.';
+    }
+    document.getElementById('mEff').textContent = eff;
+    document.getElementById('mEffBar').style.width = effPct + '%';
+    document.getElementById('resAdvice').textContent = advice;
+    document.getElementById('previewOrig').src = url;
+    document.getElementById('previewProt').src = url;
+    document.getElementById('previewProt').style.opacity = '0.3';
+    document.getElementById('previewProt').style.filter = 'grayscale(1)';
+    document.getElementById('protBadge').style.display = 'none';
+    document.getElementById('previewsWrap').style.display = 'grid';
+    document.getElementById('toolMain').classList.remove('hidden');
+    document.getElementById('dlBtn').classList.add('hidden');
+    document.getElementById('certSection').classList.add('hidden');
+    document.getElementById('tStatus').textContent = lang==='nl'?'Afbeelding geladen. Stel opties in en druk op toepassen.':'Image loaded. Configure options and press apply.';
+    document.getElementById('tStatus').className = 't-status';
+  };
+  img.src = url;
+}
+
+// ── Protection ────────────────────────────────────────────────────────────
+async function applyProtection() {
+  if (!currentFile || !sessionToken) return;
+  const lang = getLang();
+  const btn = document.getElementById('applyBtn');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const tStatus = document.getElementById('tStatus');
+
+  btn.disabled = true;
+  progressWrap.style.display = 'block';
+  tStatus.textContent = lang==='nl'?'Uploaden en verwerken...':'Uploading and processing...';
+  tStatus.className = 't-status';
+  document.getElementById('dlBtn').classList.add('hidden');
+  document.getElementById('timingBadge').classList.add('hidden');
+
+  // Animate progress bar (we don't have real progress events, so simulate)
+  let pct = 0;
+  const ticker = setInterval(() => {
+    pct = Math.min(pct + (100 - pct) * 0.04, 92);
+    progressFill.style.width = pct + '%';
+  }, 200);
+
+  const fd = new FormData();
+  fd.append('image', currentFile);
+  fd.append('pattern',        document.getElementById('patternType').value);
+  fd.append('strength',       document.getElementById('strength').value);
+  fd.append('channel_split',  document.getElementById('channelSplit').value);
+  fd.append('freq_variation', document.getElementById('freqVar').value);
+  fd.append('printer_target', document.getElementById('printerTarget').value);
+
+  try {
+    const t0 = Date.now();
+    const res = await fetch('/api/protect', {
+      method: 'POST',
+      headers: {'X-Token': sessionToken},
+      body: fd
+    });
+
+    clearInterval(ticker);
+    progressFill.style.width = '100%';
+
+    if (!res.ok) {
+      const errData = await res.json().catch(()=>({message:'Onbekende fout'}));
+      if (res.status === 429) {
+        // Limiet bereikt
+        const lang = getLang();
+        tStatus.textContent = lang==='nl'
+          ? `Maandlimiet bereikt. Upgrade uw abonnement of kies een jaarabonnement voor onbeperkt gebruik.`
+          : `Monthly limit reached. Upgrade your plan or choose annual billing for unlimited use.`;
+        tStatus.className = 't-status error';
+        // Update usage bar naar vol
+        if (currentUsage) { currentUsage.remaining = 0; currentUsage.pct = 100; updateUsageBar(currentUsage); }
+        document.getElementById('applyBtn').disabled = false;
+        progressWrap.style.display = 'none';
+        return;
+      }
+      if (res.status === 400 && errData.error === 'resolution_exceeded') {
+        const lang = getLang();
+        tStatus.textContent = lang==='nl'
+          ? `Afbeelding te groot voor uw plan (max ${errData.max_px}px). Upgrade voor hogere resoluties.`
+          : `Image too large for your plan (max ${errData.max_px}px). Upgrade for higher resolutions.`;
+        tStatus.className = 't-status error';
+        document.getElementById('applyBtn').disabled = false;
+        progressWrap.style.display = 'none';
+        return;
+      }
+      throw new Error(errData.message || 'Server error ' + res.status);
+    }
+
+    const elapsed = res.headers.get('X-Processing-Time') || ((Date.now()-t0)/1000).toFixed(2);
+    const size    = res.headers.get('X-Image-Size') || '—';
+    const mp      = res.headers.get('X-Megapixels') || '—';
+
+    resultBlob = await res.blob();
+    const url = URL.createObjectURL(resultBlob);
+    const protImg = document.getElementById('previewProt');
+    protImg.src = url;
+    protImg.style.opacity = '1';
+    protImg.style.filter = 'none';
+    document.getElementById('protBadge').style.display = 'inline';
+
+    tStatus.textContent = lang==='nl'?'Klaar! Bescherming succesvol toegepast.':'Done! Protection successfully applied.';
+    tStatus.className = 't-status success';
+
+    const tb = document.getElementById('timingBadge');
+    tb.textContent = `${size} · ${mp} MP · ${elapsed}s ${lang==='nl'?'op server verwerkt':'processed server-side'}`;
+    tb.classList.remove('hidden');
+
+    document.getElementById('dlBtn').classList.remove('hidden');
+    document.getElementById('certSection').classList.remove('hidden');
+
+    // Usage bijwerken vanuit response header
+    const usageHeader = res.headers.get('X-Usage');
+    if (usageHeader) { try { updateUsageBar(JSON.parse(usageHeader)); } catch(e) {} }
+    setTimeout(() => { progressWrap.style.display = 'none'; progressFill.style.width = '0%'; }, 600);
+  } catch(e) {
+    clearInterval(ticker);
+    progressWrap.style.display = 'none';
+    tStatus.textContent = lang==='nl'?`Fout: ${e.message}. Is de server actief?`:`Error: ${e.message}. Is the server running?`;
+    tStatus.className = 't-status error';
+  }
+  btn.disabled = false;
+}
+
+function downloadResult() {
+  if (!resultBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(resultBlob);
+  a.download = 'printguard_beschermd.png';
+  a.click();
+}
+
+async function downloadCertificate() {
+  if (!currentFile || !sessionToken) return;
+  const lang    = getLang();
+  const name    = document.getElementById('certName').value.trim();
+  const title   = document.getElementById('certTitle').value.trim();
+  const status  = document.getElementById('certStatus');
+  const btn     = document.getElementById('certBtn');
+
+  if (!name || !title) {
+    status.textContent = lang==='nl'?'Vul uw naam en de titel in.':'Please fill in your name and title.';
+    status.className = 't-status error';
+    status.classList.remove('hidden');
+    return;
+  }
+
+  btn.disabled = true;
+  status.textContent = lang==='nl'?'Certificaat genereren...':'Generating certificate...';
+  status.className = 't-status';
+  status.classList.remove('hidden');
+
+  const fd = new FormData();
+  fd.append('image',         currentFile);
+  fd.append('creator_name',  name);
+  fd.append('artwork_title', title);
+  fd.append('lang',          lang);
+
+  try {
+    const res = await fetch('/api/certificate', {
+      method: 'POST',
+      headers: {'X-Token': sessionToken},
+      body: fd
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(()=>({message:'Onbekende fout'}));
+      if (res.status === 403) {
+        status.textContent = lang==='nl'
+          ? 'Certificaten zijn alleen beschikbaar vanaf het Professional plan.'
+          : 'Certificates are only available from the Professional plan onwards.';
+      } else if (res.status === 429) {
+        status.textContent = lang==='nl'
+          ? 'Maandlimiet bereikt. Upgrade of kies een jaarabonnement.'
+          : 'Monthly limit reached. Upgrade or choose annual billing.';
+      } else {
+        status.textContent = errData.message || 'Fout bij aanmaken certificaat.';
+      }
+      status.className = 't-status error';
+      btn.disabled = false;
+      return;
+    }
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `printguard_certificaat_${Date.now()}.pdf`;
+    a.click();
+    status.textContent = lang==='nl'?'Certificaat gedownload!':'Certificate downloaded!';
+    status.className = 't-status success';
+  } catch(e) {
+    status.textContent = lang==='nl'?`Fout: ${e.message}`:`Error: ${e.message}`;
+    status.className = 't-status error';
+  }
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
