@@ -80,3 +80,27 @@ def send_welcome(to: str, name: str, plan: str, billing: str) -> bool:
     </div>
     """
     return _send(to, f"Welkom bij PrintGuard — {plan_label}", html)
+
+
+def send_contact(name: str, email: str, subject: str, message: str) -> bool:
+    """Stuur een contactformulier-bericht door naar info@printguardtool.com."""
+    html = f"""
+    <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #0f0e0d;">
+      <div style="border-bottom: 1px solid #e4ddd2; padding-bottom: 24px; margin-bottom: 32px;">
+        <span style="font-family: monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+          PRINT<span style="color: #c8531a;">GUARD</span> — Contactformulier
+        </span>
+      </div>
+      <table style="width:100%; border-collapse:collapse; font-family:monospace; font-size:12px; margin-bottom:24px;">
+        <tr><td style="padding:8px 0; color:#7a776f; width:120px;">Naam</td><td style="padding:8px 0;">{name}</td></tr>
+        <tr><td style="padding:8px 0; color:#7a776f;">E-mail</td><td style="padding:8px 0;"><a href="mailto:{email}" style="color:#c8531a;">{email}</a></td></tr>
+        <tr><td style="padding:8px 0; color:#7a776f;">Onderwerp</td><td style="padding:8px 0;">{subject}</td></tr>
+      </table>
+      <div style="background:#f7f4ef; border:1px solid #e4ddd2; padding:20px; line-height:1.8; color:#3a3834; font-size:14px; white-space:pre-wrap;">{message}</div>
+      <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #e4ddd2;
+                  font-family: monospace; font-size: 11px; color: #7a776f; letter-spacing: 0.05em;">
+        Verzonden via printguardtool.com/contact
+      </div>
+    </div>
+    """
+    return _send("info@printguardtool.com", f"[PrintGuard contact] {subject}", html)

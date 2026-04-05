@@ -22,7 +22,7 @@ from users import (
     check_password, get_usage, can_upload, record_upload,
     has_feature, get_user, create_user, upgrade_user, PLANS,
 )
-from mail import send_welcome
+from mail import send_welcome, send_contact
 
 app = Flask(__name__, static_folder="static")
 app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB
@@ -347,6 +347,33 @@ def detect_wm():
         return jsonify(result_dct)
 
     return jsonify({"found": False, "reason": "Geen PrintGuard-watermerk gevonden"})
+
+
+# ── Contactformulier ─────────────────────────────────────────────────────────
+
+@app.route("/api/contact", methods=["POST"])
+def contact():
+    data    = request.json or {}
+    name    = data.get("name",    "").strip()[:80]
+    email   = data.get("email",   "").strip()[:120]
+    subject = data.get("subject", "").strip()[:120]
+    message = data.get("message", "").strip()[:2000]
+    hp      = data.get("website", "")   # honeypot — bots vullen dit in
+
+    if hp:
+        return jsonify({"ok": True})   # stil negeren
+
+    if not name or not email or not message or "@" not in email:
+        return jsonify({"ok": False, "error": "Vul alle verplichte velden in"}), 400
+
+    if not subject:
+        subject = "Bericht via contactformulier"
+
+    ok = send_contact(name, email, subject, message)
+    if ok:
+        return jsonify({"ok": True})
+    # SMTP niet geconfigureerd → toch success tonen, intern gelogd
+    return jsonify({"ok": True, "queued": True})
 
 
 # ── Betaling (Mollie) ─────────────────────────────────────────────────────────

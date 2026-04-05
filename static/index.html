@@ -596,6 +596,54 @@ body.lang-en [data-nl] { display: none !important; }
   </div>
 </section>
 
+<section class="section" id="contact" style="background:var(--paper-warm); border-top:0.5px solid var(--border);">
+  <div class="section-label"><span data-nl>Contact</span><span data-en>Contact</span></div>
+  <h2><span data-nl>Neem <em>contact op</em></span><span data-en>Get in <em>touch</em></span></h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:4rem; margin-top:2rem;">
+
+    <div>
+      <p style="font-family:var(--font-mono);font-size:12px;color:var(--ink-muted);line-height:1.9;margin-bottom:2rem;">
+        <span data-nl>Vragen over uw abonnement, de technologie of samenwerking? Stuur ons een bericht en we reageren binnen één werkdag.</span>
+        <span data-en>Questions about your subscription, the technology or partnership? Send us a message and we'll respond within one business day.</span>
+      </p>
+      <div style="font-family:var(--font-mono);font-size:11px;line-height:2.2;color:var(--ink-muted);border-top:0.5px solid var(--border);padding-top:1.5rem;">
+        <div style="color:var(--accent);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.75rem;"><span data-nl>Bedrijfsgegevens</span><span data-en>Company details</span></div>
+        <strong style="color:var(--ink);">MadDeco</strong><br>
+        Industrieweg 26<br>
+        3738JX Maartensdijk<br>
+        Nederland<br>
+        KVK: 98239341<br>
+        <a href="mailto:info@printguardtool.com" style="color:var(--accent);text-decoration:none;">info@printguardtool.com</a>
+      </div>
+    </div>
+
+    <form id="contactForm" onsubmit="submitContact(event)">
+      <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+      <div style="margin-bottom:1rem;">
+        <label style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);display:block;margin-bottom:6px;"><span data-nl>Naam *</span><span data-en>Name *</span></label>
+        <input id="cName" type="text" required style="width:100%;padding:10px 12px;border:0.5px solid var(--border);background:var(--paper);font-family:var(--font-mono);font-size:12px;color:var(--ink);border-radius:2px;outline:none;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);display:block;margin-bottom:6px;"><span data-nl>E-mailadres *</span><span data-en>Email address *</span></label>
+        <input id="cEmail" type="email" required style="width:100%;padding:10px 12px;border:0.5px solid var(--border);background:var(--paper);font-family:var(--font-mono);font-size:12px;color:var(--ink);border-radius:2px;outline:none;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);display:block;margin-bottom:6px;"><span data-nl>Onderwerp</span><span data-en>Subject</span></label>
+        <input id="cSubject" type="text" style="width:100%;padding:10px 12px;border:0.5px solid var(--border);background:var(--paper);font-family:var(--font-mono);font-size:12px;color:var(--ink);border-radius:2px;outline:none;">
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);display:block;margin-bottom:6px;"><span data-nl>Bericht *</span><span data-en>Message *</span></label>
+        <textarea id="cMessage" required rows="5" style="width:100%;padding:10px 12px;border:0.5px solid var(--border);background:var(--paper);font-family:var(--font-mono);font-size:12px;color:var(--ink);border-radius:2px;outline:none;resize:vertical;"></textarea>
+      </div>
+      <button type="submit" id="cBtn" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;">
+        <span data-nl>Versturen</span><span data-en>Send message</span>
+      </button>
+      <p id="cStatus" style="font-family:var(--font-mono);font-size:11px;margin-top:10px;display:none;"></p>
+    </form>
+
+  </div>
+</section>
+
 <footer>
   <div>
     <div class="footer-brand">Print<span>Guard</span></div>
@@ -604,16 +652,18 @@ body.lang-en [data-nl] { display: none !important; }
   <div class="footer-col">
     <h4><span data-nl>Product</span><span data-en>Product</span></h4>
     <a href="#how"><span data-nl>Hoe het werkt</span><span data-en>How it works</span></a>
+    <a href="#protection"><span data-nl>Bescherming</span><span data-en>Protection</span></a>
     <a href="#pricing"><span data-nl>Tarieven</span><span data-en>Pricing</span></a>
     <a href="#tool-section"><span data-nl>Dashboard</span><span data-en>Dashboard</span></a>
   </div>
   <div class="footer-col">
     <h4><span data-nl>Juridisch</span><span data-en>Legal</span></h4>
-    <a href="#"><span data-nl>Privacybeleid</span><span data-en>Privacy policy</span></a>
-    <a href="#"><span data-nl>Gebruiksvoorwaarden</span><span data-en>Terms of use</span></a>
+    <a href="/privacy"><span data-nl>Privacyverklaring</span><span data-en>Privacy policy</span></a>
+    <a href="/voorwaarden"><span data-nl>Algemene voorwaarden</span><span data-en>Terms of use</span></a>
+    <a href="#contact"><span data-nl>Contact</span><span data-en>Contact</span></a>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 PrintGuard</span>
+    <span>© 2026 MadDeco t/a PrintGuard · KVK 98239341</span>
     <span><span data-nl>Alle rechten voorbehouden</span><span data-en>All rights reserved</span></span>
   </div>
 </footer>
@@ -1025,6 +1075,54 @@ async function downloadCertificate() {
     status.className = 't-status error';
   }
   btn.disabled = false;
+}
+
+async function submitContact(event) {
+  event.preventDefault();
+  const btn    = document.getElementById('cBtn');
+  const status = document.getElementById('cStatus');
+  const honey  = document.querySelector('[name="website"]');
+
+  // honeypot — bot heeft dit veld ingevuld
+  if (honey && honey.value) return;
+
+  const body = {
+    name:    document.getElementById('cName').value.trim(),
+    email:   document.getElementById('cEmail').value.trim(),
+    subject: document.getElementById('cSubject').value.trim(),
+    message: document.getElementById('cMessage').value.trim(),
+    website: ''
+  };
+
+  btn.disabled  = true;
+  btn.innerHTML = lang === 'nl' ? 'Verzenden…' : 'Sending…';
+  status.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/contact', {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify(body)
+    });
+    const data = await res.json();
+    status.style.display = 'block';
+    if (res.ok) {
+      status.style.color = '#2e7d32';
+      status.textContent = lang === 'nl'
+        ? 'Bericht verzonden. We nemen zo snel mogelijk contact op.'
+        : 'Message sent. We will get back to you as soon as possible.';
+      document.getElementById('contactForm').reset();
+    } else {
+      status.style.color = 'var(--accent)';
+      status.textContent = data.error || (lang === 'nl' ? 'Er is iets misgegaan.' : 'Something went wrong.');
+    }
+  } catch(e) {
+    status.style.display = 'block';
+    status.style.color   = 'var(--accent)';
+    status.textContent   = lang === 'nl' ? `Fout: ${e.message}` : `Error: ${e.message}`;
+  }
+  btn.disabled  = false;
+  btn.innerHTML = '<span data-nl>Versturen</span><span data-en>Send message</span>';
 }
 </script>
 </body>
