@@ -17,6 +17,7 @@ from flask import Flask, request, jsonify, send_file, send_from_directory
 from database import init_db
 from engine import apply_protection
 from certificate import generate_certificate, sha256_of_bytes
+from watermark import embed_watermark, detect_watermark
 from users import (
     check_password, get_usage, can_upload, record_upload,
     has_feature, get_user, create_user, upgrade_user, PLANS,
@@ -190,6 +191,18 @@ def protect():
     )
     elapsed = round(time.time() - t0, 2)
 
+    # Onzichtbaar watermerk: maker + hash in de pixels bakken
+    user     = get_user(email)
+    uname    = (user.get("name") or email.split("@")[0]) if user else email.split("@")[0]
+    img_hash = sha256_of_bytes(img_bytes)
+    cert_id  = f"PG-{img_hash[:12].upper()}"
+    prot_arr = __import__("numpy").array(protected)
+    prot_arr = embed_watermark(prot_arr, uname, cert_id, img_hash)
+    from PIL import Image as _PIL
+    protected = _PIL.fromarray(prot_arr, "RGB")
+    if img.mode == "RGBA":
+        protected.putalpha(img.split()[3])
+
     record_upload(email)
 
     buf = io.BytesIO()
@@ -290,6 +303,35 @@ def verify_hash():
         return jsonify({"error": "Geen afbeelding"}), 400
     img_bytes = request.files["image"].read()
     return jsonify({"hash": sha256_of_bytes(img_bytes), "size": len(img_bytes)})
+
+
+# ── Watermerk detectie ────────────────────────────────────────────────────────
+
+@app.route("/api/detect-watermark", methods=["POST"])
+def detect_wm():
+    """
+    Detecteer het onzichtbare PrintGuard-watermerk in een afbeelding.
+    Werkt op het beschermde PNG-bestand (niet het origineel).
+    Vereist de SHA-256 hash van het originele bestand als parameter.
+    """
+    email = get_email()
+    if not email:
+        return jsonify({"error": "Niet geautoriseerd"}), 401
+    if "image" not in request.files:
+        return jsonify({"error": "Geen afbeelding"}), 400
+
+    img_bytes  = request.files["image"].read()
+    orig_hash  = request.form.get("original_hash", "")
+
+    if not orig_hash or len(orig_hash) != 64:
+        return jsonify({"error": "original_hash vereist (SHA-256 van het originele bestand)"}), 400
+
+    from PIL import Image as _PIL
+    import numpy as np
+    img = _PIL.open(io.BytesIO(img_bytes)).convert("RGB")
+    arr = np.array(img)
+    result = detect_watermark(arr, orig_hash)
+    return jsonify(result)
 
 
 # ── Betaling (Mollie) ─────────────────────────────────────────────────────────
