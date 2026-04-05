@@ -241,6 +241,12 @@ def protect():
     if err:
         return err
 
+    if not has_feature(email, "print_protection"):
+        return jsonify({
+            "error":   "feature_unavailable",
+            "message": "Printbeveiliging is niet beschikbaar in het DesignGuard-plan. Upgrade naar PrintGuard voor printbeveiliging.",
+        }), 403
+
     from PIL import Image
     img = Image.open(io.BytesIO(img_bytes))
     ok, w, h, max_px = _check_resolution(email, img)
@@ -276,6 +282,8 @@ def protect_batch():
         return jsonify({"error": "Niet geautoriseerd"}), 401
     if not has_feature(email, "batch"):
         return jsonify({"error": "Batch-upload vereist het Professional of Studio plan"}), 403
+    if not has_feature(email, "print_protection"):
+        return jsonify({"error": "Printbeveiliging is niet beschikbaar in het DesignGuard-plan."}), 403
 
     files = request.files.getlist("images[]")
     if not files:
