@@ -26,7 +26,7 @@ PLANS = {
         "price_month":   19,
         "price_year":    190,
         "max_px":        4000,
-        "monthly_limit": 50,
+        "monthly_limit": 25,
         "certificate":   False,
         "batch":         False,
         "registry":      False,
