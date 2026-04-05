@@ -82,6 +82,18 @@ nav {
 .pixel-demo { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(20, 1fr); grid-template-rows: repeat(12, 1fr); gap: 2px; border: 0.5px solid var(--border-strong); padding: 12px; background: var(--paper); }
 .pixel-cell { border-radius: 1px; transition: background 0.3s; }
 
+.threat-table { padding: 5rem 3rem; background: var(--paper-warm); }
+.threat-table h2 { margin-bottom: 2.5rem; }
+.threat-grid { display: grid; grid-template-columns: 1fr 1fr; border: 0.5px solid var(--border); }
+.threat-header { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); padding: 12px 20px; background: var(--ink); border-bottom: 0.5px solid rgba(247,244,239,0.1); }
+.threat-row { display: contents; }
+.threat-row:nth-child(even) .threat-cell { background: var(--paper); }
+.threat-cell { padding: 14px 20px; border-bottom: 0.5px solid var(--border); font-family: var(--font-mono); font-size: 11px; line-height: 1.6; }
+.threat-cell:first-child { border-right: 0.5px solid var(--border); color: var(--ink); font-weight: 500; }
+.threat-cell:last-child { color: var(--ink-muted); }
+.threat-cell .threat-tag { display: inline-block; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-right: 6px; }
+@media (max-width: 900px) { .threat-grid { grid-template-columns: 1fr; } .threat-header:last-child { display: none; } .threat-cell:first-child { border-right: none; font-weight: 600; } .threat-cell:last-child { border-top: none; padding-top: 0; color: var(--ink-muted); } }
+
 .pricing { padding: 6rem 3rem; }
 .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 3rem; }
 .price-card { background: var(--paper-warm); border: 0.5px solid var(--border); padding: 2.5rem 2rem; }
@@ -297,6 +309,57 @@ body.lang-en [data-nl] { display: none !important; }
     </div>
   </div>
 </div>
+
+<section class="threat-table" id="protection">
+  <div class="section-label"><span data-nl>Bescherming</span><span data-en>Protection</span></div>
+  <h2><span data-nl>Wat de dief <em>te zien krijgt</em></span><span data-en>What the thief <em>will see</em></span></h2>
+  <div class="threat-grid">
+
+    <div class="threat-header"><span data-nl>Dreigingsscenario</span><span data-en>Threat scenario</span></div>
+    <div class="threat-header"><span data-nl>Resultaat voor de dief</span><span data-en>Result for the thief</span></div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">01</span><span data-nl>Printen thuis</span><span data-en>Home printing</span><br><span style="font-weight:300;color:var(--ink-muted)">inkjet — HP, Epson, Canon</span></div>
+      <div class="threat-cell"><span data-nl>Gekleurde strepen, kleurvlekken en zichtbaar rasterpatroon — onverkoopbaar</span><span data-en>Colour streaks, blotching and visible grid pattern — unsellable</span></div>
+    </div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">02</span><span data-nl>Kantoorprinter</span><span data-en>Office printer</span><br><span style="font-weight:300;color:var(--ink-muted)">laser — HP, Brother, Xerox</span></div>
+      <div class="threat-cell"><span data-nl>Kleurverschuiving en banding — herkenbaar als mislukte reproductie</span><span data-en>Colour shift and banding — immediately recognisable as a failed reproduction</span></div>
+    </div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">03</span><span data-nl>Professionele drukkerij</span><span data-en>Professional press</span><br><span style="font-weight:300;color:var(--ink-muted)">offset</span></div>
+      <div class="threat-cell"><span data-nl>Kleurregistratiefouten en moiré — onbruikbaar voor commerciële verkoop</span><span data-en>Colour registration errors and moiré — unsuitable for commercial sale</span></div>
+    </div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">04</span><span data-nl>Fotolab</span><span data-en>Photo lab</span><br><span style="font-weight:300;color:var(--ink-muted)">CEWE, Albelli, Hema fotodienst</span></div>
+      <div class="threat-cell"><span data-nl>Kleuurtextuur in huid- en neutrale tinten — onbetrouwbaar als kunstdruk</span><span data-en>Colour texture in skin and neutral tones — unreliable as an art print</span></div>
+    </div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">05</span><span data-nl>AI-vergroting</span><span data-en>AI upscaling</span><br><span style="font-weight:300;color:var(--ink-muted)">Topaz Gigapixel, Real-ESRGAN</span></div>
+      <div class="threat-cell"><span data-nl>Ringing, artefacten en nep-randen in de vergrote versie</span><span data-en>Ringing, artefacts and false edges in the upscaled version</span></div>
+    </div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">06</span><span data-nl>Foto van het scherm</span><span data-en>Phone photo of screen</span><br><span style="font-weight:300;color:var(--ink-muted)"><span data-nl>telefoon of camera</span><span data-en>phone or camera</span></span></div>
+      <div class="threat-cell"><span data-nl>Zichtbare moiré-banden over de gehele foto</span><span data-en>Visible moiré bands across the entire photo</span></div>
+    </div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">07</span><span data-nl>Digitale kopie of screenshot</span><span data-en>Digital copy or screenshot</span></div>
+      <div class="threat-cell"><span data-nl>Bevat alle bescherming — elke print van die kopie mislukt nog steeds</span><span data-en>Carries all protection — every print from that copy still fails</span></div>
+    </div>
+
+    <div class="threat-row">
+      <div class="threat-cell"><span class="threat-tag">08</span><span data-nl>Juridisch geschil</span><span data-en>Legal dispute</span></div>
+      <div class="threat-cell"><span data-nl>Naam en aanmaakdatum onweerlegbaar vastgelegd op de Bitcoin-blockchain</span><span data-en>Name and creation date irrefutably recorded on the Bitcoin blockchain</span></div>
+    </div>
+
+  </div>
+</section>
 
 <section class="pricing" id="pricing">
   <div class="section-label"><span data-nl>Tarieven</span><span data-en>Pricing</span></div>
