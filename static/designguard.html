@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DesignGuard — Bescherm uw ontwerp. Aantoonbaar.</title>
+<style>
+:root {
+  --ink:#0f0e0d; --ink-light:#3a3834; --ink-muted:#7a776f;
+  --paper:#f7f4ef; --paper-warm:#efe9df; --paper-mid:#e4ddd2;
+  --accent:#1a6bc8; /* blauw i.p.v. oranje — DesignGuard eigen kleur */
+  --accent-light:#4a8fdc;
+  --border:rgba(15,14,13,0.12); --border-strong:rgba(15,14,13,0.25);
+  --font-display:'Georgia',serif; --font-mono:'Courier New',monospace;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:var(--font-display); background:var(--paper); color:var(--ink); font-size:18px; line-height:1.6; }
+
+nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:0 3rem; height:64px; background:rgba(247,244,239,0.95); backdrop-filter:blur(12px); border-bottom:0.5px solid var(--border); }
+.nav-logo { font-family:var(--font-mono); font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink); text-decoration:none; }
+.nav-logo span { color:var(--accent); }
+.nav-back { font-family:var(--font-mono); font-size:11px; color:var(--ink-muted); text-decoration:none; letter-spacing:0.05em; }
+.nav-back:hover { color:var(--accent); }
+.lang-toggle { display:flex; border:0.5px solid var(--border-strong); border-radius:3px; overflow:hidden; }
+.lang-btn { font-family:var(--font-mono); font-size:10px; padding:4px 10px; background:transparent; border:none; cursor:pointer; color:var(--ink-muted); }
+.lang-btn.active { background:var(--ink); color:var(--paper); }
+.nav-right { display:flex; align-items:center; gap:1.5rem; }
+
+.hero { min-height:70vh; display:flex; flex-direction:column; justify-content:center; padding:8rem 3rem 4rem; background:var(--paper); }
+.hero-eyebrow { font-family:var(--font-mono); font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1.5rem; }
+h1 { font-size:clamp(2.8rem,7vw,6rem); font-weight:300; line-height:1.05; letter-spacing:-0.02em; max-width:780px; }
+h1 em { font-style:italic; color:var(--ink-light); }
+.hero-sub { margin-top:1.8rem; font-size:1.05rem; color:var(--ink-muted); max-width:520px; font-weight:300; line-height:1.7; }
+.hero-actions { display:flex; gap:1rem; margin-top:2.5rem; flex-wrap:wrap; }
+.btn-primary { font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; padding:14px 32px; background:var(--accent); color:#fff; border:none; cursor:pointer; border-radius:2px; text-decoration:none; display:inline-block; }
+.btn-ghost { font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; padding:14px 32px; background:transparent; color:var(--ink-muted); border:0.5px solid var(--border-strong); cursor:pointer; border-radius:2px; text-decoration:none; display:inline-block; }
+.btn-ghost:hover { color:var(--ink); border-color:var(--ink); }
+
+.badge-row { display:flex; gap:1rem; margin-top:2rem; flex-wrap:wrap; }
+.badge { font-family:var(--font-mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:6px 12px; border:0.5px solid var(--border-strong); border-radius:2px; color:var(--ink-muted); }
+
+.section { padding:5rem 3rem; max-width:1100px; margin:0 auto; }
+.section-label { font-family:var(--font-mono); font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+h2 { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:300; margin-bottom:1.5rem; }
+h2 em { font-style:italic; }
+
+.who-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:2rem; }
+.who-card { border:0.5px solid var(--border); padding:1.5rem; background:var(--paper-warm); }
+.who-icon { font-size:1.8rem; margin-bottom:0.75rem; }
+.who-card h3 { font-family:var(--font-mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink); margin-bottom:0.5rem; }
+.who-card p { font-size:0.9rem; color:var(--ink-muted); line-height:1.7; }
+
+.how-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; margin-top:2rem; }
+.step { position:relative; }
+.step-num { font-family:var(--font-mono); font-size:2rem; font-weight:300; color:var(--accent); opacity:0.35; margin-bottom:0.5rem; }
+.step h3 { font-size:1rem; font-weight:600; margin-bottom:0.5rem; }
+.step p { font-size:0.9rem; color:var(--ink-muted); line-height:1.7; }
+
+.legal-box { background:var(--paper-warm); border:0.5px solid var(--border); padding:2.5rem; margin-top:2rem; display:grid; grid-template-columns:1fr 1fr; gap:3rem; }
+.legal-box h3 { font-family:var(--font-mono); font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+.legal-box p { font-size:0.9rem; color:var(--ink-muted); line-height:1.8; }
+.legal-box ul { margin-left:1.5rem; font-size:0.9rem; color:var(--ink-muted); line-height:2; }
+
+.pricing-note { margin-top:2rem; border:0.5px solid var(--border); padding:1.5rem 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; background:var(--paper-warm); }
+.pricing-note p { font-family:var(--font-mono); font-size:12px; color:var(--ink-muted); }
+
+.full-width { background:var(--ink); color:var(--paper); padding:5rem 3rem; text-align:center; }
+.full-width h2 { color:var(--paper); margin-bottom:1rem; }
+.full-width p { color:rgba(247,244,239,0.7); font-size:1rem; max-width:560px; margin:0 auto 2rem; }
+
+footer { background:var(--ink); color:rgba(247,244,239,0.5); padding:2rem 3rem; font-family:var(--font-mono); font-size:10px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+footer a { color:rgba(247,244,239,0.5); text-decoration:none; }
+footer a:hover { color:var(--paper); }
+
+body.lang-nl [data-en], body.lang-nl [data-de], body.lang-nl [data-fr], body.lang-nl [data-it] { display:none !important; }
+body.lang-en [data-nl], body.lang-en [data-de], body.lang-en [data-fr], body.lang-en [data-it] { display:none !important; }
+body.lang-de [data-nl], body.lang-de [data-en], body.lang-de [data-fr], body.lang-de [data-it] { display:none !important; }
+body.lang-fr [data-nl], body.lang-fr [data-en], body.lang-fr [data-de], body.lang-fr [data-it] { display:none !important; }
+body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lang-it [data-fr] { display:none !important; }
+
+@media (max-width:860px) {
+  nav { padding:0 1.5rem; }
+  .hero { padding:6rem 1.5rem 3rem; }
+  .who-grid, .how-steps { grid-template-columns:1fr 1fr; }
+  .legal-box { grid-template-columns:1fr; gap:1.5rem; }
+  .section { padding:3rem 1.5rem; }
+  footer { padding:1.5rem; }
+}
+@media (max-width:560px) {
+  .who-grid, .how-steps { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body class="lang-nl">
+
+<nav>
+  <a class="nav-logo" href="/">Print<span>Guard</span></a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('nl')">NL</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('de')">DE</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('it')">IT</button>
+    </div>
+    <a class="nav-back" href="/">← <span data-nl>naar PrintGuard</span><span data-en>back to PrintGuard</span><span data-de>zurück zu PrintGuard</span><span data-fr>retour à PrintGuard</span><span data-it>torna a PrintGuard</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span data-nl>DesignGuard · Ontwerp-bescherming · Blockchain</span>
+    <span data-en>DesignGuard · Design Protection · Blockchain</span>
+    <span data-de>DesignGuard · Designschutz · Blockchain</span>
+    <span data-fr>DesignGuard · Protection du design · Blockchain</span>
+    <span data-it>DesignGuard · Protezione del design · Blockchain</span>
+  </div>
+  <h1>
+    <span data-nl>Bescherm uw ontwerp.<br><em>Aantoonbaar.</em><br>Vastgelegd op blockchain.</span>
+    <span data-en>Protect your design.<br><em>Provably.</em><br>Recorded on blockchain.</span>
+    <span data-de>Schützen Sie Ihr Design.<br><em>Nachweislich.</em><br>Auf der Blockchain gesichert.</span>
+    <span data-fr>Protégez votre design.<br><em>De manière prouvable.</em><br>Enregistré sur blockchain.</span>
+    <span data-it>Proteggi il tuo design.<br><em>Dimostrabilmente.</em><br>Registrato su blockchain.</span>
+  </h1>
+  <p class="hero-sub">
+    <span data-nl>Fotografeer uw sculptuur, modeontwerp, meubelstuk of prototype — DesignGuard legt vast dat u de maker bent via een SHA-256 hash en een onomkeekeerbare Bitcoin blockchain tijdstempel. Juridisch bruikbaar als prioriteitsbewijs.</span>
+    <span data-en>Photograph your sculpture, fashion design, furniture piece or prototype — DesignGuard records you as the creator via a SHA-256 hash and an irreversible Bitcoin blockchain timestamp. Legally usable as priority evidence.</span>
+    <span data-de>Fotografieren Sie Ihre Skulptur, Ihr Modedesign, Ihr Möbelstück oder Ihren Prototyp — DesignGuard dokumentiert Sie als Schöpfer mittels SHA-256-Hash und einem unwiderruflichen Bitcoin-Blockchain-Zeitstempel. Juristisch als Prioritätsnachweis verwendbar.</span>
+    <span data-fr>Photographiez votre sculpture, création de mode, meuble ou prototype — DesignGuard enregistre que vous en êtes le créateur via un hash SHA-256 et un horodatage blockchain Bitcoin irrévocable. Utilisable juridiquement comme preuve de priorité.</span>
+    <span data-it>Fotografa la tua scultura, creazione di moda, mobile o prototipo — DesignGuard registra che sei il creatore tramite hash SHA-256 e un timestamp blockchain Bitcoin irreversibile. Utilizzabile legalmente come prova di priorità.</span>
+  </p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="/#tool-section">
+      <span data-nl>Certificaat aanmaken</span><span data-en>Create certificate</span><span data-de>Zertifikat erstellen</span><span data-fr>Créer un certificat</span><span data-it>Crea certificato</span>
+    </a>
+    <a class="btn-ghost" href="#hoe">
+      <span data-nl>Hoe het werkt</span><span data-en>How it works</span><span data-de>Wie es funktioniert</span><span data-fr>Comment ça marche</span><span data-it>Come funziona</span>
+    </a>
+  </div>
+  <div class="badge-row">
+    <span class="badge">SHA-256</span>
+    <span class="badge">OpenTimestamps · Bitcoin</span>
+    <span class="badge"><span data-nl>Afbeelding direct verwijderd</span><span data-en>Image deleted instantly</span><span data-de>Bild sofort gelöscht</span><span data-fr>Image supprimée immédiatement</span><span data-it>Immagine eliminata immediatamente</span></span>
+    <span class="badge"><span data-nl>Juridisch prioriteitsbewijs</span><span data-en>Legal priority evidence</span><span data-de>Juristischer Prioritätsnachweis</span><span data-fr>Preuve de priorité juridique</span><span data-it>Prova di priorità legale</span></span>
+  </div>
+</section>
+
+<!-- VOOR WIE -->
+<section class="section" id="voor-wie" style="border-top:0.5px solid var(--border);">
+  <div class="section-label">
+    <span data-nl>Doelgroep</span><span data-en>Who it's for</span><span data-de>Zielgruppe</span><span data-fr>Pour qui</span><span data-it>Per chi</span>
+  </div>
+  <h2><span data-nl>Voor iedereen die <em>iets maakt</em></span><span data-en>For everyone who <em>makes something</em></span><span data-de>Für alle, die <em>etwas erschaffen</em></span><span data-fr>Pour tous ceux qui <em>créent quelque chose</em></span><span data-it>Per chiunque <em>crei qualcosa</em></span></h2>
+  <div class="who-grid">
+    <div class="who-card">
+      <div class="who-icon">🗿</div>
+      <h3><span data-nl>Beeldhouwers</span><span data-en>Sculptors</span><span data-de>Bildhauer</span><span data-fr>Sculpteurs</span><span data-it>Scultori</span></h3>
+      <p><span data-nl>Leg uw sculptuur vast in meerdere hoeken voordat u publiceert — het certificaat bewijst dat u de maker bent op dat exacte moment.</span><span data-en>Document your sculpture from multiple angles before publishing — the certificate proves you are the creator at that exact moment.</span><span data-de>Dokumentieren Sie Ihre Skulptur aus mehreren Winkeln, bevor Sie veröffentlichen — das Zertifikat beweist, dass Sie der Schöpfer zu diesem genauen Zeitpunkt sind.</span><span data-fr>Documentez votre sculpture sous plusieurs angles avant de publier — le certificat prouve que vous en êtes le créateur à ce moment précis.</span><span data-it>Documenta la tua scultura da più angolazioni prima di pubblicare — il certificato prova che sei il creatore in quel momento esatto.</span></p>
+    </div>
+    <div class="who-card">
+      <div class="who-icon">👗</div>
+      <h3><span data-nl>Modeontwerpers</span><span data-en>Fashion designers</span><span data-de>Modedesigner</span><span data-fr>Créateurs de mode</span><span data-it>Designer di moda</span></h3>
+      <p><span data-nl>Bescherm silhouetten, patronen en collecties. Foto's van uw prototypes vastgelegd vóór presentatie geven u prioriteitsrecht bij een geschil.</span><span data-en>Protect silhouettes, patterns and collections. Photos of your prototypes documented before presentation give you priority rights in a dispute.</span><span data-de>Schützen Sie Silhouetten, Schnittmuster und Kollektionen. Fotos Ihrer Prototypen vor der Präsentation dokumentiert geben Ihnen Vorrangsrechte bei Streitigkeiten.</span><span data-fr>Protégez les silhouettes, les patrons et les collections. Des photos de vos prototypes documentées avant la présentation vous donnent des droits de priorité en cas de litige.</span><span data-it>Proteggi silhouette, modelli e collezioni. Le foto dei tuoi prototipi documentate prima della presentazione ti danno diritti di priorità in caso di controversia.</span></p>
+    </div>
+    <div class="who-card">
+      <div class="who-icon">🪑</div>
+      <h3><span data-nl>Meubelmakers</span><span data-en>Furniture makers</span><span data-de>Möbelmacher</span><span data-fr>Créateurs de mobilier</span><span data-it>Artigiani del mobile</span></h3>
+      <p><span data-nl>Van handgemaakt tot serie — leg uw vorm vast voordat u naar producenten stapt. Voorkomen dat uw ontwerp gekopieerd wordt begint met bewijs.</span><span data-en>From handmade to series production — document your form before approaching manufacturers. Preventing your design from being copied starts with evidence.</span><span data-de>Von handgefertigt bis zur Serienproduktion — dokumentieren Sie Ihre Form, bevor Sie Hersteller ansprechen. Die Verhinderung einer Kopie Ihres Designs beginnt mit dem Beweis.</span><span data-fr>Du fait main à la série — documentez votre forme avant de contacter des fabricants. La prévention de la copie commence par la preuve.</span><span data-it>Dal fatto a mano alla produzione in serie — documenta la tua forma prima di contattare i produttori. La prevenzione della copia inizia con la prova.</span></p>
+    </div>
+    <div class="who-card">
+      <div class="who-icon">💎</div>
+      <h3><span data-nl>Sieradenontwerpers</span><span data-en>Jewellery designers</span><span data-de>Schmuckdesigner</span><span data-fr>Créateurs de bijoux</span><span data-it>Designer di gioielli</span></h3>
+      <p><span data-nl>Unieke ringen, hangers of collectiestukken — een close-up foto vastgelegd met blockchain-tijdstempel geeft u aantoonbare eigendomsdatum.</span><span data-en>Unique rings, pendants or collection pieces — a close-up photo documented with blockchain timestamp gives you a provable ownership date.</span><span data-de>Einzigartige Ringe, Anhänger oder Sammlungsstücke — ein Nahaufnahmefoto mit Blockchain-Zeitstempel gibt Ihnen ein nachweisbares Eigentumsatum.</span><span data-fr>Des bagues, pendentifs ou pièces de collection uniques — une photo en gros plan documentée avec un horodatage blockchain vous donne une date de propriété prouvable.</span><span data-it>Anelli, ciondoli o pezzi da collezione unici — una foto ravvicinata documentata con timestamp blockchain ti dà una data di proprietà dimostrabile.</span></p>
+    </div>
+    <div class="who-card">
+      <div class="who-icon">⚙️</div>
+      <h3><span data-nl>Industrieel ontwerpers</span><span data-en>Industrial designers</span><span data-de>Industriedesigner</span><span data-fr>Designers industriels</span><span data-it>Designer industriali</span></h3>
+      <p><span data-nl>Bij productontwikkeling is prioriteit alles. Fotografeer uw prototype in de vroegste fase — het certificaat werkt ook als aanvulling op een modelrecht-aanvraag.</span><span data-en>In product development, priority is everything. Photograph your prototype in the earliest phase — the certificate also works as a supplement to a design right application.</span><span data-de>Bei der Produktentwicklung ist Priorität alles. Fotografieren Sie Ihren Prototyp in der frühesten Phase — das Zertifikat funktioniert auch als Ergänzung zu einem Designrechtsantrag.</span><span data-fr>Dans le développement de produits, la priorité est primordiale. Photographiez votre prototype dès la phase la plus précoce — le certificat fonctionne aussi comme complément à une demande de droit de dessin.</span><span data-it>Nello sviluppo del prodotto, la priorità è tutto. Fotografa il tuo prototipo nella fase più precoce — il certificato funziona anche come supplemento a una richiesta di diritto di design.</span></p>
+    </div>
+    <div class="who-card">
+      <div class="who-icon">🏺</div>
+      <h3><span data-nl>Keramisten &amp; ambachtslieden</span><span data-en>Ceramists &amp; craftspeople</span><span data-de>Keramiker &amp; Handwerker</span><span data-fr>Céramistes &amp; artisans</span><span data-it>Ceramisti &amp; artigiani</span></h3>
+      <p><span data-nl>Handwerk is uniek — en daarmee vatbaar voor namaak. Documenteer uw vormen, texturen en technieken voordat u ze tentoon stelt of verkoopt.</span><span data-en>Handwork is unique — and therefore susceptible to imitation. Document your shapes, textures and techniques before exhibiting or selling them.</span><span data-de>Handarbeit ist einzigartig — und damit anfällig für Nachahmung. Dokumentieren Sie Ihre Formen, Texturen und Techniken, bevor Sie sie ausstellen oder verkaufen.</span><span data-fr>Le travail artisanal est unique — et donc susceptible d'imitation. Documentez vos formes, textures et techniques avant de les exposer ou de les vendre.</span><span data-it>Il lavoro artigianale è unico — e quindi suscettibile di imitazione. Documenta le tue forme, texture e tecniche prima di esporle o venderle.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- HOE HET WERKT -->
+<section class="section" id="hoe" style="border-top:0.5px solid var(--border);background:var(--paper-warm);">
+  <div class="section-label">
+    <span data-nl>Werkwijze</span><span data-en>How it works</span><span data-de>Vorgehensweise</span><span data-fr>Fonctionnement</span><span data-it>Come funziona</span>
+  </div>
+  <h2><span data-nl>Vier stappen naar <em>aantoonbaar bewijs</em></span><span data-en>Four steps to <em>provable evidence</em></span><span data-de>Vier Schritte zu <em>nachweisbarem Beweis</em></span><span data-fr>Quatre étapes vers une <em>preuve prouvable</em></span><span data-it>Quattro passi verso una <em>prova dimostrabile</em></span></h2>
+  <div class="how-steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3><span data-nl>Fotografeer</span><span data-en>Photograph</span><span data-de>Fotografieren</span><span data-fr>Photographiez</span><span data-it>Fotografa</span></h3>
+      <p><span data-nl>Maak meerdere foto's van uw ontwerp — van voor, opzij, detail. Gebruik een neutrale achtergrond en goed licht. Elke foto wordt apart gecertificeerd.</span><span data-en>Take multiple photos of your design — front, side, detail. Use a neutral background and good lighting. Each photo is certified separately.</span><span data-de>Machen Sie mehrere Fotos Ihres Designs — von vorne, von der Seite, Details. Verwenden Sie einen neutralen Hintergrund und gutes Licht. Jedes Foto wird separat zertifiziert.</span><span data-fr>Prenez plusieurs photos de votre design — de face, de côté, en détail. Utilisez un fond neutre et un bon éclairage. Chaque photo est certifiée séparément.</span><span data-it>Scatta più foto del tuo design — frontale, laterale, dettaglio. Usa uno sfondo neutro e una buona illuminazione. Ogni foto viene certificata separatamente.</span></p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3><span data-nl>Upload</span><span data-en>Upload</span><span data-de>Hochladen</span><span data-fr>Téléchargez</span><span data-it>Carica</span></h3>
+      <p><span data-nl>Upload de foto via uw PrintGuard-account (Professional of Studio plan). De server berekent een SHA-256 hash van uw afbeelding en verwijdert het origineel direct.</span><span data-en>Upload the photo via your PrintGuard account (Professional or Studio plan). The server calculates a SHA-256 hash of your image and deletes the original immediately.</span><span data-de>Laden Sie das Foto über Ihr PrintGuard-Konto hoch (Professional- oder Studio-Plan). Der Server berechnet einen SHA-256-Hash Ihres Bildes und löscht das Original sofort.</span><span data-fr>Téléchargez la photo via votre compte PrintGuard (plan Professional ou Studio). Le serveur calcule un hash SHA-256 de votre image et supprime l'original immédiatement.</span><span data-it>Carica la foto tramite il tuo account PrintGuard (piano Professional o Studio). Il server calcola un hash SHA-256 della tua immagine e elimina l'originale immediatamente.</span></p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3><span data-nl>Blockchain tijdstempel</span><span data-en>Blockchain timestamp</span><span data-de>Blockchain-Zeitstempel</span><span data-fr>Horodatage blockchain</span><span data-it>Timestamp blockchain</span></h3>
+      <p><span data-nl>De hash wordt via OpenTimestamps ingediend op de Bitcoin blockchain. Dit levert een onveranderlijk, wereldwijd geverifieerd bewijs op dat uw ontwerp op dit moment bestond.</span><span data-en>The hash is submitted to the Bitcoin blockchain via OpenTimestamps. This creates immutable, globally verifiable proof that your design existed at this moment.</span><span data-de>Der Hash wird über OpenTimestamps auf der Bitcoin-Blockchain eingereicht. Dies liefert einen unveränderlichen, weltweit verifizierbaren Nachweis, dass Ihr Design zu diesem Zeitpunkt existierte.</span><span data-fr>Le hash est soumis à la blockchain Bitcoin via OpenTimestamps. Cela crée une preuve immuable et vérifiable mondialement que votre design existait à ce moment.</span><span data-it>L'hash viene inviato alla blockchain Bitcoin tramite OpenTimestamps. Questo crea una prova immutabile e verificabile globalmente che il tuo design esisteva in quel momento.</span></p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h3><span data-nl>Certificaat downloaden</span><span data-en>Download certificate</span><span data-de>Zertifikat herunterladen</span><span data-fr>Télécharger le certificat</span><span data-it>Scarica il certificato</span></h3>
+      <p><span data-nl>U ontvangt een ZIP met uw PDF-certificaat en het .ots blockchain-bewijsbestand. Bewaar dit op een veilige plek — u kunt het altijd herdownloaden vanuit uw archief.</span><span data-en>You receive a ZIP with your PDF certificate and the .ots blockchain proof file. Keep this somewhere safe — you can always re-download it from your archive.</span><span data-de>Sie erhalten eine ZIP mit Ihrem PDF-Zertifikat und der .ots-Blockchain-Beweis-Datei. Bewahren Sie diese sicher auf — Sie können sie jederzeit aus Ihrem Archiv neu herunterladen.</span><span data-fr>Vous recevez un ZIP avec votre certificat PDF et le fichier de preuve blockchain .ots. Conservez-le en lieu sûr — vous pouvez toujours le retélécharger depuis votre archive.</span><span data-it>Ricevi uno ZIP con il tuo certificato PDF e il file di prova blockchain .ots. Conservalo in un posto sicuro — puoi sempre riscaricarlo dal tuo archivio.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- JURIDISCHE WAARDE -->
+<section class="section" style="border-top:0.5px solid var(--border);">
+  <div class="section-label">
+    <span data-nl>Juridische waarde</span><span data-en>Legal value</span><span data-de>Rechtlicher Wert</span><span data-fr>Valeur juridique</span><span data-it>Valore legale</span>
+  </div>
+  <h2><span data-nl>Wat het certificaat <em>wél</em> en <em>niet</em> is</span><span data-en>What the certificate <em>is</em> and <em>is not</em></span><span data-de>Was das Zertifikat <em>ist</em> und <em>nicht ist</em></span><span data-fr>Ce que le certificat <em>est</em> et <em>n'est pas</em></span><span data-it>Cosa il certificato <em>è</em> e <em>non è</em></span></h2>
+  <div class="legal-box">
+    <div>
+      <h3><span data-nl>Wat het wél biedt</span><span data-en>What it does provide</span><span data-de>Was es bietet</span><span data-fr>Ce qu'il offre</span><span data-it>Cosa fornisce</span></h3>
+      <ul>
+        <li><span data-nl>Aantoonbare datum van eerste documentatie</span><span data-en>Provable date of first documentation</span><span data-de>Nachweisbares Datum der ersten Dokumentation</span><span data-fr>Date prouvable de première documentation</span><span data-it>Data dimostrabile della prima documentazione</span></li>
+        <li><span data-nl>SHA-256 vingerafdruk — uniek voor uw foto</span><span data-en>SHA-256 fingerprint — unique to your photo</span><span data-de>SHA-256-Fingerabdruck — einzigartig für Ihr Foto</span><span data-fr>Empreinte SHA-256 — unique à votre photo</span><span data-it>Impronta SHA-256 — unica per la tua foto</span></li>
+        <li><span data-nl>Bitcoin blockchain tijdstempel — onveranderlijk en wereldwijd verifieerbaar</span><span data-en>Bitcoin blockchain timestamp — immutable and globally verifiable</span><span data-de>Bitcoin-Blockchain-Zeitstempel — unveränderlich und weltweit verifizierbar</span><span data-fr>Horodatage blockchain Bitcoin — immuable et vérifiable mondialement</span><span data-it>Timestamp blockchain Bitcoin — immutabile e verificabile globalmente</span></li>
+        <li><span data-nl>Bruikbaar als prioriteitsbewijs in een civiel geschil</span><span data-en>Usable as priority evidence in a civil dispute</span><span data-de>Als Prioritätsnachweis in einem zivilrechtlichen Streit verwendbar</span><span data-fr>Utilisable comme preuve de priorité dans un litige civil</span><span data-it>Utilizzabile come prova di priorità in una controversia civile</span></li>
+        <li><span data-nl>Aanvullend bewijs naast een modelrecht-aanvraag</span><span data-en>Supplementary evidence alongside a design right application</span><span data-de>Ergänzender Nachweis neben einer Designrechtsanmeldung</span><span data-fr>Preuve complémentaire en accompagnement d'une demande de droit de dessin</span><span data-it>Prova supplementare accanto a una domanda di diritto di design</span></li>
+      </ul>
+    </div>
+    <div>
+      <h3><span data-nl>Wat het niet vervangt</span><span data-en>What it does not replace</span><span data-de>Was es nicht ersetzt</span><span data-fr>Ce qu'il ne remplace pas</span><span data-it>Cosa non sostituisce</span></h3>
+      <p><span data-nl>Een DesignGuard-certificaat is <strong>geen officieel modelrecht</strong> (Benelux, EU of WIPO-registratie). Bij serieuze industriële namaak is een geregistreerd modelrecht sterker. Het certificaat is een laagdrempelige, directe aanvulling — u hoeft niet te wachten op een registratieprocedure en heeft al bewijs klaarliggen mocht u dat nodig hebben. Wij adviseren juridisch advies bij een concreet geschil.</span><span data-en>A DesignGuard certificate is <strong>not an official design right</strong> (Benelux, EU or WIPO registration). For serious industrial copying, a registered design right is stronger. The certificate is a low-threshold, immediate supplement — you don't need to wait for a registration procedure and already have evidence ready should you need it. We advise legal counsel in case of a concrete dispute.</span><span data-de>Ein DesignGuard-Zertifikat ist <strong>kein offizielles Designrecht</strong> (Benelux-, EU- oder WIPO-Eintragung). Bei ernsthafter industrieller Nachahmung ist ein eingetragenes Designrecht stärker. Das Zertifikat ist eine niedrigschwellige, sofortige Ergänzung — Sie müssen nicht auf ein Registrierungsverfahren warten und haben bereits Beweise bereit, falls Sie sie benötigen. Wir empfehlen rechtliche Beratung bei einem konkreten Streit.</span><span data-fr>Un certificat DesignGuard n'est <strong>pas un droit de design officiel</strong> (enregistrement Benelux, UE ou OMPI). Pour une copie industrielle sérieuse, un droit de dessin enregistré est plus solide. Le certificat est un complément immédiat à faible seuil — vous n'avez pas besoin d'attendre une procédure d'enregistrement et avez déjà des preuves prêtes si vous en avez besoin. Nous conseillons un avis juridique en cas de litige concret.</span><span data-it>Un certificato DesignGuard <strong>non è un diritto di design ufficiale</strong> (registrazione Benelux, UE o WIPO). Per una copia industriale seria, un diritto di design registrato è più forte. Il certificato è un supplemento immediato a bassa soglia — non devi aspettare una procedura di registrazione e hai già prove pronte se necessario. Consigliamo consulenza legale in caso di controversia concreta.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- TARIEVEN -->
+<section class="section" style="border-top:0.5px solid var(--border);">
+  <div class="section-label">
+    <span data-nl>Toegang</span><span data-en>Access</span><span data-de>Zugang</span><span data-fr>Accès</span><span data-it>Accesso</span>
+  </div>
+  <h2><span data-nl>Onderdeel van <em>PrintGuard Professional &amp; Studio</em></span><span data-en>Included in <em>PrintGuard Professional &amp; Studio</em></span><span data-de>Enthalten in <em>PrintGuard Professional &amp; Studio</em></span><span data-fr>Inclus dans <em>PrintGuard Professional &amp; Studio</em></span><span data-it>Incluso in <em>PrintGuard Professional &amp; Studio</em></span></h2>
+  <p style="color:var(--ink-muted);max-width:600px;font-size:0.95rem;line-height:1.8;margin-bottom:1.5rem;">
+    <span data-nl>DesignGuard maakt gebruik van hetzelfde certificaatplatform als PrintGuard. U heeft geen apart account nodig — het certificaat is beschikbaar voor alle Professional- en Studio-abonnees. Elke certificaat-aanvraag telt als één upload.</span>
+    <span data-en>DesignGuard uses the same certificate platform as PrintGuard. No separate account needed — the certificate is available to all Professional and Studio subscribers. Each certificate request counts as one upload.</span>
+    <span data-de>DesignGuard nutzt dieselbe Zertifikatsplattform wie PrintGuard. Kein separates Konto erforderlich — das Zertifikat steht allen Professional- und Studio-Abonnenten zur Verfügung. Jede Zertifikatsanfrage zählt als ein Upload.</span>
+    <span data-fr>DesignGuard utilise la même plateforme de certificats que PrintGuard. Pas de compte séparé nécessaire — le certificat est disponible pour tous les abonnés Professional et Studio. Chaque demande de certificat compte comme un upload.</span>
+    <span data-it>DesignGuard utilizza la stessa piattaforma di certificati di PrintGuard. Nessun account separato necessario — il certificato è disponibile per tutti gli abbonati Professional e Studio. Ogni richiesta di certificato conta come un upload.</span>
+  </p>
+  <div class="pricing-note">
+    <p>
+      <span data-nl>Professional — €49/maand · 100 uploads · Certificaat inbegrepen</span>
+      <span data-en>Professional — €49/month · 100 uploads · Certificate included</span>
+      <span data-de>Professional — €49/Monat · 100 Uploads · Zertifikat inklusive</span>
+      <span data-fr>Professional — 49 €/mois · 100 uploads · Certificat inclus</span>
+      <span data-it>Professional — €49/mese · 100 upload · Certificato incluso</span>
+      <br>
+      <span data-nl>Studio — €99/maand · Onbeperkt · Batch-upload · Prioriteit support</span>
+      <span data-en>Studio — €99/month · Unlimited · Batch upload · Priority support</span>
+      <span data-de>Studio — €99/Monat · Unbegrenzt · Batch-Upload · Prioritäts-Support</span>
+      <span data-fr>Studio — 99 €/mois · Illimité · Upload groupé · Support prioritaire</span>
+      <span data-it>Studio — €99/mese · Illimitato · Upload multiplo · Supporto prioritario</span>
+    </p>
+    <a class="btn-primary" href="/#pricing">
+      <span data-nl>Abonnement kiezen</span><span data-en>Choose a plan</span><span data-de>Plan wählen</span><span data-fr>Choisir un abonnement</span><span data-it>Scegli un piano</span>
+    </a>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="full-width">
+  <h2><span data-nl>Klaar om uw ontwerp te beschermen?</span><span data-en>Ready to protect your design?</span><span data-de>Bereit, Ihr Design zu schützen?</span><span data-fr>Prêt à protéger votre design ?</span><span data-it>Pronto a proteggere il tuo design?</span></h2>
+  <p><span data-nl>Maak een PrintGuard-account aan en begin vandaag met het certificeren van uw ontwerpen, sculpturen en creaties.</span><span data-en>Create a PrintGuard account and start certifying your designs, sculptures and creations today.</span><span data-de>Erstellen Sie ein PrintGuard-Konto und beginnen Sie noch heute mit der Zertifizierung Ihrer Designs, Skulpturen und Kreationen.</span><span data-fr>Créez un compte PrintGuard et commencez dès aujourd'hui à certifier vos designs, sculptures et créations.</span><span data-it>Crea un account PrintGuard e inizia oggi a certificare i tuoi design, sculture e creazioni.</span></p>
+  <a class="btn-primary" href="/#pricing" style="background:#fff;color:var(--accent);">
+    <span data-nl>Aan de slag</span><span data-en>Get started</span><span data-de>Loslegen</span><span data-fr>Commencer</span><span data-it>Inizia</span>
+  </a>
+</div>
+
+<footer>
+  <span>© 2026 MadDeco t/a PrintGuard · KVK 98239341</span>
+  <span>
+    <a href="/privacy"><span data-nl>Privacyverklaring</span><span data-en>Privacy policy</span><span data-de>Datenschutz</span><span data-fr>Politique de confidentialité</span><span data-it>Privacy</span></a>
+    &nbsp;·&nbsp;
+    <a href="/voorwaarden"><span data-nl>Voorwaarden</span><span data-en>Terms</span><span data-de>AGB</span><span data-fr>CGU</span><span data-it>Termini</span></a>
+    &nbsp;·&nbsp;
+    <a href="/#contact">Contact</a>
+  </span>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.className = 'lang-' + lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.lang-btn[onclick*="'${lang}'"]`);
+  if (btn) btn.classList.add('active');
+  localStorage.setItem('pg_lang', lang);
+}
+(function() {
+  const saved = localStorage.getItem('pg_lang');
+  const langs = ['nl','en','de','fr','it'];
+  if (saved && langs.includes(saved)) setLang(saved);
+  else setLang('nl');
+})();
+</script>
+</body>
+</html>
