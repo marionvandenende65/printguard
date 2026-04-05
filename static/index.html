@@ -526,7 +526,7 @@ body.lang-en [data-nl] { display: none !important; }
         </div>
 
         <div style="margin:1rem 0">
-          <div class="t-label"><span data-nl>Basissterkte</span><span data-en>Base strength</span> <span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-muted);font-weight:300;text-transform:none;letter-spacing:0;">(<span data-nl>onzichtbaarheidsgrens ≈12</span><span data-en>invisibility threshold ≈12</span>)</span></div>
+          <div class="t-label"><span data-nl>Basissterkte</span><span data-en>Base strength</span></div>
           <div class="slider-row"><input type="range" id="strength" min="3" max="45" step="1" value="18"><span class="slider-val" id="strengthVal">18</span></div>
         </div>
         <div style="margin:1rem 0">
@@ -925,10 +925,9 @@ async function applyProtection() {
   const fd = new FormData();
   fd.append('image', currentFile);
   fd.append('pattern',        document.getElementById('patternType').value);
-  fd.append('strength',       document.getElementById('strength').value);
-  fd.append('channel_split',  document.getElementById('channelSplit').value);
-  fd.append('freq_variation', document.getElementById('freqVar').value);
-  // printer_target is altijd 'all' (breedband) — ingesteld op de server;
+  fd.append('strength', document.getElementById('strength').value);
+  fd.append('p1',       document.getElementById('channelSplit').value);
+  fd.append('p2',       document.getElementById('freqVar').value);
 
   try {
     const t0 = Date.now();

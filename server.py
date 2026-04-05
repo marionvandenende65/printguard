@@ -28,6 +28,7 @@ app = Flask(__name__, static_folder="static")
 app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB
 
 SECRET_KEY   = os.getenv("SECRET_KEY", "dev_secret_change_in_production")
+ADMIN_TOKEN  = os.getenv("ADMIN_TOKEN", "")
 TOKEN_DAYS   = 30
 MOLLIE_KEY   = os.getenv("MOLLIE_API_KEY", "")
 SITE_URL     = os.getenv("SITE_URL", "https://www.printguardtool.com")
@@ -179,11 +180,10 @@ def protect():
 
     pattern        = request.form.get("pattern",        "combined")
     strength       = max(3,  min(45, int(request.form.get("strength",       18))))
-    channel_split  = max(0,  min(30, int(request.form.get("channel_split",  12))))
-    freq_variation = max(1,  min(8,  int(request.form.get("freq_variation",  3))))
-    printer_target = "all"  # altijd breedband: offset + laser + inkjet + AI-proof
+    channel_split  = max(0,  min(30, int(request.form.get("p1", 12))))
+    freq_variation = max(1,  min(8,  int(request.form.get("p2",  3))))
+    printer_target = "all"
 
-    # Unieke AI-seed per afbeelding — maakt het patroon uniek en moeilijker te filteren
     ai_seed = int(sha256_of_bytes(img_bytes)[:8], 16) % (2**32)
 
     t0 = time.time()
@@ -314,14 +314,10 @@ def verify_hash():
 
 @app.route("/api/detect-watermark", methods=["POST"])
 def detect_wm():
-    """
-    Detecteer het onzichtbare PrintGuard-watermerk in een afbeelding.
-    Werkt op het beschermde PNG-bestand (niet het origineel).
-    Vereist de SHA-256 hash van het originele bestand als parameter.
-    """
-    email = get_email()
-    if not email:
-        return jsonify({"error": "Niet geautoriseerd"}), 401
+    # Alleen toegankelijk met geldig admin-token
+    token = request.headers.get("X-Admin-Token", "")
+    if not ADMIN_TOKEN or token != ADMIN_TOKEN:
+        return jsonify({"error": "Niet geautoriseerd"}), 403
     if "image" not in request.files:
         return jsonify({"error": "Geen afbeelding"}), 400
 
