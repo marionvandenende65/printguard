@@ -70,6 +70,8 @@ def generate_certificate(
     file_size_bytes: int,
     certificate_id: str = None,
     lang: str = "nl",
+    ots_submitted: bool = False,
+    ots_calendar: str = "",
 ) -> bytes:
     """
     Genereer een PDF-certificaat van auteursrechtregistratie.
@@ -83,6 +85,8 @@ def generate_certificate(
     file_size_bytes  : Bestandsgrootte origineel
     certificate_id   : Optioneel uniek ID (anders automatisch gegenereerd)
     lang             : "nl" of "en"
+    ots_submitted    : Of de hash succesvol ingediend is bij OpenTimestamps
+    ots_calendar     : De calendar-server die gebruikt is
 
     Returns
     -------
@@ -249,6 +253,67 @@ def generate_certificate(
     _draw_hash_visual(c, file_hash, vis_x, vis_y - 4, size=float(vis_size), cols=8)
 
     y = vis_y - vis_size - 20
+
+    # ── Blockchain timestamp ──────────────────────────────────────────────────
+    y -= 6
+    bc_label = "BLOCKCHAIN TIJDSTEMPEL" if NL else "BLOCKCHAIN TIMESTAMP"
+    y = section_header(bc_label, y)
+
+    if ots_submitted:
+        bc_status = "Ingediend — Bitcoin bevestiging ~1-2 uur" if NL else "Submitted — Bitcoin confirmation ~1-2 hrs"
+        bc_color  = ACCENT
+    else:
+        bc_status = "Niet beschikbaar (netwerk onbereikbaar)" if NL else "Unavailable (network unreachable)"
+        bc_color  = MUTED
+
+    c.setFillColor(MUTED)
+    c.setFont("Helvetica", 8)
+    bc_net_label = "Netwerk" if NL else "Network"
+    c.drawString(margin + 8*mm, y, bc_net_label)
+    c.setFillColor(INK)
+    c.drawRightString(W - margin - 8*mm, y, "Bitcoin (OpenTimestamps)")
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.3)
+    c.line(margin + 8*mm, y - 4, W - margin - 8*mm, y - 4)
+    y -= 16
+
+    bc_status_label = "Status" if NL else "Status"
+    c.setFillColor(MUTED)
+    c.setFont("Helvetica", 8)
+    c.drawString(margin + 8*mm, y, bc_status_label)
+    c.setFillColor(bc_color)
+    c.setFont("Helvetica-Bold", 8)
+    c.drawRightString(W - margin - 8*mm, y, bc_status)
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.3)
+    c.line(margin + 8*mm, y - 4, W - margin - 8*mm, y - 4)
+    y -= 16
+
+    if ots_submitted and ots_calendar:
+        cal_label = "Calendar server" if NL else "Calendar server"
+        c.setFillColor(MUTED)
+        c.setFont("Helvetica", 8)
+        c.drawString(margin + 8*mm, y, cal_label)
+        c.setFillColor(INK)
+        c.setFont("Helvetica", 7.5)
+        c.drawRightString(W - margin - 8*mm, y, ots_calendar)
+        c.setStrokeColor(BORDER)
+        c.setLineWidth(0.3)
+        c.line(margin + 8*mm, y - 4, W - margin - 8*mm, y - 4)
+        y -= 16
+
+    verify_label = "Verificatie" if NL else "Verification"
+    verify_val   = "ots verify blockchain_bewijs.ots" if NL else "ots verify blockchain_proof.ots"
+    c.setFillColor(MUTED)
+    c.setFont("Helvetica", 8)
+    c.drawString(margin + 8*mm, y, verify_label)
+    c.setFillColor(INK)
+    c.setFont("Courier", 7.5)
+    c.drawRightString(W - margin - 8*mm, y, verify_val)
+    c.setStrokeColor(BORDER)
+    c.setLineWidth(0.3)
+    c.line(margin + 8*mm, y - 4, W - margin - 8*mm, y - 4)
+    y -= 20
 
     # ── Uitleg ────────────────────────────────────────────────────────────────
     c.setFillColor(PAPER_WARM)

@@ -7,7 +7,7 @@ PrintGuard Server v4
 - Mollie checkout placeholder (actief zodra MOLLIE_API_KEY is ingesteld)
 """
 
-import io, os, time, json
+import io, os, time, json, zipfile, urllib.request, urllib.error
 import jwt as pyjwt
 from dotenv import load_dotenv
 load_dotenv()
@@ -33,6 +33,36 @@ SITE_URL     = os.getenv("SITE_URL", "https://www.printguardtool.com")
 
 # Database initialiseren bij opstarten
 init_db()
+
+
+# ── OpenTimestamps ────────────────────────────────────────────────────────────
+
+_OTS_CALENDARS = [
+    "https://a.pool.opentimestamps.org/digest",
+    "https://b.pool.opentimestamps.org/digest",
+    "https://alice.btc.calendar.opentimestamps.org/digest",
+]
+
+def _stamp_to_ots(hash_hex: str) -> tuple[bytes, str]:
+    """
+    Dien de SHA-256 hash in bij OpenTimestamps.
+    Geeft (ots_bytes, calendar_url) terug, of (b"", "") bij fout.
+    """
+    hash_bytes = bytes.fromhex(hash_hex)
+    for url in _OTS_CALENDARS:
+        try:
+            req = urllib.request.Request(
+                url,
+                data=hash_bytes,
+                headers={"Content-Type": "application/octet-stream", "Accept": "application/vnd.opentimestamps.v1"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                return resp.read(), url
+        except Exception as e:
+            print(f"[ots] {url} mislukt: {e}")
+            continue
+    return b"", ""
 
 
 # ── JWT helpers ───────────────────────────────────────────────────────────────
@@ -199,6 +229,12 @@ def certificate():
     creator_name  = request.form.get("creator_name",  "Onbekend").strip()
     artwork_title = request.form.get("artwork_title", "Zonder titel").strip()
     lang          = request.form.get("lang", "nl")
+    NL            = lang == "nl"
+
+    # SHA-256 hash berekenen en direct indienen bij Bitcoin via OpenTimestamps
+    file_hash             = sha256_of_bytes(img_bytes)
+    ots_bytes, ots_cal    = _stamp_to_ots(file_hash)
+    ots_submitted         = len(ots_bytes) > 0
 
     pdf_bytes = generate_certificate(
         image_bytes=img_bytes,
@@ -208,15 +244,38 @@ def certificate():
         image_height=h,
         file_size_bytes=len(img_bytes),
         lang=lang,
+        ots_submitted=ots_submitted,
+        ots_calendar=ots_cal.replace("https://", "").split("/")[0] if ots_cal else "",
     )
 
     record_upload(email)
 
+    # ZIP met PDF + .ots bewijs
+    ts       = int(time.time())
+    zip_buf  = io.BytesIO()
+    ots_name = "blockchain_bewijs.ots" if NL else "blockchain_proof.ots"
+    pdf_name = f"printguard_certificaat_{ts}.pdf"
+
+    with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(pdf_name, pdf_bytes)
+        if ots_submitted:
+            zf.writestr(ots_name, ots_bytes)
+        else:
+            readme = (
+                "De blockchain-tijdstempel kon niet worden aangemaakt (netwerk onbereikbaar).\n"
+                "Uw certificaat is wel geldig — de SHA-256 hash en tijdstempel zijn vastgelegd in de PDF.\n"
+                if NL else
+                "The blockchain timestamp could not be created (network unreachable).\n"
+                "Your certificate is still valid — the SHA-256 hash and timestamp are recorded in the PDF.\n"
+            )
+            zf.writestr("LEES_MIJ.txt" if NL else "README.txt", readme)
+
+    zip_buf.seek(0)
     return send_file(
-        io.BytesIO(pdf_bytes),
-        mimetype="application/pdf",
+        zip_buf,
+        mimetype="application/zip",
         as_attachment=True,
-        download_name=f"printguard_certificaat_{int(time.time())}.pdf",
+        download_name=f"printguard_certificaat_{ts}.zip",
     )
 
 

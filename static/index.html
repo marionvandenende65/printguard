@@ -502,8 +502,8 @@ body.lang-en [data-nl] { display: none !important; }
             </div>
           </div>
           <button class="btn-dl" id="certBtn" onclick="downloadCertificate()" style="border-color:var(--accent); color:var(--accent);">
-            <span data-nl>Certificaat downloaden (PDF)</span>
-            <span data-en>Download certificate (PDF)</span>
+            <span data-nl>Certificaat downloaden (PDF + blockchain)</span>
+            <span data-en>Download certificate (PDF + blockchain)</span>
           </button>
           <p class="t-status hidden" id="certStatus"></p>
         </div>
@@ -931,9 +931,11 @@ async function downloadCertificate() {
     const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `printguard_certificaat_${Date.now()}.pdf`;
+    a.download = `printguard_certificaat_${Date.now()}.zip`;
     a.click();
-    status.textContent = lang==='nl'?'Certificaat gedownload!':'Certificate downloaded!';
+    status.textContent = lang==='nl'
+      ? 'ZIP gedownload — bevat uw PDF-certificaat + blockchain bewijs (.ots)'
+      : 'ZIP downloaded — contains your PDF certificate + blockchain proof (.ots)';
     status.className = 't-status success';
   } catch(e) {
     status.textContent = lang==='nl'?`Fout: ${e.message}`:`Error: ${e.message}`;
