@@ -183,11 +183,14 @@ def protect():
     freq_variation = max(1,  min(8,  int(request.form.get("freq_variation",  3))))
     printer_target = "all"  # altijd breedband: offset + laser + inkjet + AI-proof
 
+    # Unieke AI-seed per afbeelding — maakt het patroon uniek en moeilijker te filteren
+    ai_seed = int(sha256_of_bytes(img_bytes)[:8], 16) % (2**32)
+
     t0 = time.time()
     protected = apply_protection(
         img, pattern=pattern, strength=strength,
         channel_split=channel_split, freq_variation=freq_variation,
-        printer_target=printer_target,
+        printer_target=printer_target, ai_seed=ai_seed,
     )
     elapsed = round(time.time() - t0, 2)
 

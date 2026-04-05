@@ -40,6 +40,7 @@ PRINTER_PROFILES = {
         "angle_patterns":  True,
         "bayer_patterns":  False,
         "photolab_attack": False,
+        "ai_disruption":   False,
     },
     "laser": {
         "freq_bands":      [3, 5, 7],
@@ -47,6 +48,7 @@ PRINTER_PROFILES = {
         "angle_patterns":  False,
         "bayer_patterns":  False,
         "photolab_attack": False,
+        "ai_disruption":   False,
     },
     "inkjet": {
         "freq_bands":      [2, 4, 6],
@@ -54,28 +56,30 @@ PRINTER_PROFILES = {
         "angle_patterns":  False,
         "bayer_patterns":  True,
         "photolab_attack": False,
+        "ai_disruption":   False,
     },
     "photolab": {
         # Fuji Frontier, Noritsu, CEWE, Albelli — laser-fotochemisch, geen halftoon
-        # ICC-profiel corrigeert globaal maar niet ruimtelijk wisselende patronen
         "freq_bands":      [3, 5],
         "channel_weight":  1.1,
         "angle_patterns":  False,
         "bayer_patterns":  False,
         "photolab_attack": True,
+        "ai_disruption":   False,
     },
     "all": {
-        # Breedband: alle printertypen + fotolabs + AI-upscalers
+        # Breedband: alle printertypen + fotolabs + AI-upscalers (Topaz, Real-ESRGAN)
         "freq_bands":      [2, 3, 4, 6, 8],
         "channel_weight":  1.3,
         "angle_patterns":  True,
         "bayer_patterns":  True,
         "photolab_attack": True,
+        "ai_disruption":   True,
     },
 }
 
 
-def _process_strip(strip, y_offset, pattern, strength, channel_split, freq_variation, profile):
+def _process_strip(strip, y_offset, pattern, strength, channel_split, freq_variation, profile, ai_seed=0):
     strip_h, w = strip.shape[:2]
     fv = max(1, freq_variation)
 
@@ -234,6 +238,57 @@ def _process_strip(strip, y_offset, pattern, strength, channel_split, freq_varia
         noise_b += (sh_shift // 2).astype(np.int16)
         del sh_mask, sh_pat, sh_shift, R_cur, G_cur, B_cur, luminance
 
+    # ── AI-upscaler disruptie (Topaz Gigapixel, Real-ESRGAN, Waifu2x) ─────────
+    # CNN-upscalers hebben drie aantoonbare zwakke punten:
+    # 1. Receptive field verwarring: patroon op 8–16px periode veroorzaakt
+    #    ringing en detail-hallucination in de upscaled output
+    # 2. Transposed convolution fout: 2px checkerboard triggert bekende artifact
+    # 3. Valse randen: 45°-randen verwarren de edge-detection lagen van ESRGAN
+    # Seed is uniek per afbeelding → uniek patroon, moeilijker te filteren
+    if profile.get("ai_disruption", False):
+        rng = np.random.default_rng(ai_seed)
+
+        # Aanval 1: Receptive field verwarring (8–16px periode)
+        # Upscaler verwacht echte textuur in dit bereik — vals patroon veroorzaakt
+        # ringing en hallucinations in de 2× of 4× vergroting
+        for rf_period in (11, 14):          # twee frequenties in het kwetsbare bereik
+            ph_r = rng.uniform(0, 6.283)
+            ph_g = rng.uniform(0, 6.283)
+            ph_b = rng.uniform(0, 6.283)
+            f_rf = np.float32(1.0 / rf_period)
+            ai_r = np.sin(f_rf * (X.astype(np.float32) + Y.astype(np.float32) * 0.5) + ph_r)
+            ai_g = np.sin(f_rf * (X.astype(np.float32) * 0.5 + Y.astype(np.float32)) + ph_g)
+            ai_b = np.sin(f_rf * (X.astype(np.float32) - Y.astype(np.float32)) + ph_b)
+            amp = max(3, strength // 5)
+            noise_r += (ai_r * amp).astype(np.int16)
+            noise_g += (ai_g * amp).astype(np.int16)
+            noise_b += (ai_b * amp).astype(np.int16)
+            del ai_r, ai_g, ai_b
+
+        # Aanval 2: Transposed convolution checkerboard trigger
+        # Upscalers gebruiken transposed convolutions voor 2× vergroting —
+        # een 2px checkerboard triggert de bekende "checkerboard artifact" fout
+        cb_amp = max(2, strength // 7)
+        checker_ai = np.where((X + Y) % 2 == 0,  cb_amp, -cb_amp).astype(np.int16)
+        noise_r += checker_ai
+        noise_g -= (checker_ai * 2 // 3).astype(np.int16)
+        noise_b += (checker_ai // 2).astype(np.int16)
+        del checker_ai
+
+        # Aanval 3: Valse randen voor edge-detection lagen
+        # Real-ESRGAN en Topaz detecteren randen op 45° en versterken die.
+        # Valse randen op vaste tussenafstand verwarren de feature-extractie —
+        # de upscaler versterkt onze nep-randen en creëert artefacten
+        edge_amp = max(2, strength // 6)
+        edge_period = 16 + int(ai_seed % 8)   # slight variation per image
+        false_edge = np.where(
+            ((X + Y) % edge_period == 0) | ((X - Y) % edge_period == 0),
+            edge_amp, 0
+        ).astype(np.int16)
+        noise_r += false_edge
+        noise_b -= false_edge
+        del false_edge
+
     del X, Y
     strip[:, :, 0] = np.clip(strip[:, :, 0] + noise_r, 0, 255)
     strip[:, :, 1] = np.clip(strip[:, :, 1] + noise_g, 0, 255)
@@ -251,8 +306,9 @@ def apply_protection(
     printer_target="all",
     tile_height=TILE_HEIGHT,
     progress_callback=None,
+    ai_seed=42,
 ):
-    profile = PRINTER_PROFILES.get(printer_target, PRINTER_PROFILES["offset"])
+    profile  = PRINTER_PROFILES.get(printer_target, PRINTER_PROFILES["all"])
 
     mode = img.mode
     rgb  = img.convert("RGB")
@@ -264,7 +320,10 @@ def apply_protection(
     for strip_idx, y0 in enumerate(range(0, h, tile_height)):
         y1       = min(y0 + tile_height, h)
         strip_np = np.array(rgb.crop((0, y0, w, y1)), dtype=np.int16)
-        strip_np = _process_strip(strip_np, y0, pattern, strength, channel_split, freq_variation, profile)
+        strip_np = _process_strip(
+            strip_np, y0, pattern, strength, channel_split,
+            freq_variation, profile, ai_seed=ai_seed,
+        )
         result_arr[y0:y1] = strip_np.astype(np.uint8)
         del strip_np
         if progress_callback:
