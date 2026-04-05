@@ -295,6 +295,8 @@ def verify_hash():
 # ── Betaling (Mollie) ─────────────────────────────────────────────────────────
 
 PLAN_PRICES = {
+    ("basic",        "monthly"): ("9.00",   "PrintGuard Basic — maandelijks"),
+    ("basic",        "yearly"):  ("90.00",  "PrintGuard Basic — jaarlijks"),
     ("starter",      "monthly"): ("19.00",  "PrintGuard Starter — maandelijks"),
     ("starter",      "yearly"):  ("190.00", "PrintGuard Starter — jaarlijks"),
     ("professional", "monthly"): ("49.00",  "PrintGuard Professional — maandelijks"),

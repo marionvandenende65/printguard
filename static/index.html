@@ -83,7 +83,7 @@ nav {
 .pixel-cell { border-radius: 1px; transition: background 0.3s; }
 
 .pricing { padding: 6rem 3rem; }
-.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem; }
+.pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 3rem; }
 .price-card { background: var(--paper-warm); border: 0.5px solid var(--border); padding: 2.5rem 2rem; }
 .price-card.featured { background: var(--ink); color: var(--paper); }
 .price-card.featured .price-label, .price-card.featured .price-desc, .price-card.featured .price-feature { color: rgba(247,244,239,0.6); }
@@ -303,6 +303,20 @@ body.lang-en [data-nl] { display: none !important; }
   <h2><span data-nl>Eenvoudig, <em>transparant</em></span><span data-en>Simple, <em>transparent</em></span></h2>
   <div class="pricing-grid">
     <div class="price-card">
+      <div class="price-label">Basic</div>
+      <div class="price-amount"><sup>€</sup>9</div>
+      <div class="price-period"><span data-nl>per maand, ex btw</span><span data-en>per month, excl. VAT</span></div>
+      <div class="price-divider"></div>
+      <p class="price-desc"><span data-nl>Voor hobbykunstenaars met een kleine online aanwezigheid.</span><span data-en>For hobby artists with a small online presence.</span></p>
+      <ul class="price-features">
+        <li class="price-feature"><span data-nl>5 afbeeldingen/maand</span><span data-en>5 images/month</span></li>
+        <li class="price-feature"><span data-nl>60 per jaar bij jaarabonnement</span><span data-en>60 per year with annual plan</span></li>
+        <li class="price-feature"><span data-nl>Tot 4.000px breedte</span><span data-en>Up to 4,000px wide</span></li>
+        <li class="price-feature">PNG export</li>
+      </ul>
+      <button class="btn-plan" data-plan="basic"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
+    </div>
+    <div class="price-card">
       <div class="price-label">Starter</div>
       <div class="price-amount"><sup>€</sup>19</div>
       <div class="price-period"><span data-nl>per maand, ex btw</span><span data-en>per month, excl. VAT</span></div>
@@ -311,10 +325,10 @@ body.lang-en [data-nl] { display: none !important; }
       <ul class="price-features">
         <li class="price-feature"><span data-nl>25 afbeeldingen/maand</span><span data-en>25 images/month</span></li>
         <li class="price-feature"><span data-nl>Tot 4.000px breedte</span><span data-en>Up to 4,000px wide</span></li>
-        <li class="price-feature"><span data-nl>3 patroon algoritmes</span><span data-en>3 pattern algorithms</span></li>
+        <li class="price-feature"><span data-nl>Alle patroon algoritmes</span><span data-en>All pattern algorithms</span></li>
         <li class="price-feature">PNG export</li>
       </ul>
-      <button class="btn-plan"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
+      <button class="btn-plan" data-plan="starter"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
     </div>
     <div class="price-card featured">
       <div class="price-badge"><span data-nl>Populairst</span><span data-en>Most popular</span></div>

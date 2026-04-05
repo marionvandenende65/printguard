@@ -22,6 +22,15 @@ PLANS = {
         "batch":         False,
         "registry":      False,
     },
+    "basic": {
+        "price_month":   9,
+        "price_year":    90,
+        "max_px":        4000,
+        "monthly_limit": 5,
+        "certificate":   False,
+        "batch":         False,
+        "registry":      False,
+    },
     "starter": {
         "price_month":   19,
         "price_year":    190,
