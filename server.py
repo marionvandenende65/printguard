@@ -690,9 +690,15 @@ def _random_password() -> str:
 @app.route("/<path:path>")
 def serve(path):
     static_dir = os.path.join(os.path.dirname(__file__), "static")
-    full_path  = os.path.join(static_dir, path)
+    # 1. Exact bestand (bijv. static/style.css)
+    full_path = os.path.join(static_dir, path)
     if path and os.path.exists(full_path) and os.path.isfile(full_path):
         return send_from_directory(static_dir, path)
+    # 2. Pad + .html (bijv. /designguard → static/designguard.html)
+    html_path = full_path + ".html"
+    if path and os.path.exists(html_path) and os.path.isfile(html_path):
+        return send_from_directory(static_dir, path + ".html")
+    # 3. SPA-fallback → index.html
     return send_from_directory(static_dir, "index.html")
 
 
