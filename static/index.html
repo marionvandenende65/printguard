@@ -304,8 +304,8 @@ body.lang-en [data-nl] { display: none !important; }
   <div class="pricing-grid">
     <div class="price-card">
       <div class="price-label">Starter</div>
-      <div class="price-amount"><sup>€</sup>9</div>
-      <div class="price-period"><span data-nl>per maand</span><span data-en>per month</span></div>
+      <div class="price-amount"><sup>€</sup>19</div>
+      <div class="price-period"><span data-nl>per maand, ex btw</span><span data-en>per month, excl. VAT</span></div>
       <div class="price-divider"></div>
       <p class="price-desc"><span data-nl>Voor individuele kunstenaars die online verkopen.</span><span data-en>For individual artists selling online.</span></p>
       <ul class="price-features">
@@ -319,12 +319,12 @@ body.lang-en [data-nl] { display: none !important; }
     <div class="price-card featured">
       <div class="price-badge"><span data-nl>Populairst</span><span data-en>Most popular</span></div>
       <div class="price-label">Professional</div>
-      <div class="price-amount"><sup>€</sup>24</div>
-      <div class="price-period"><span data-nl>per maand</span><span data-en>per month</span></div>
+      <div class="price-amount"><sup>€</sup>49</div>
+      <div class="price-period"><span data-nl>per maand, ex btw</span><span data-en>per month, excl. VAT</span></div>
       <div class="price-divider"></div>
       <p class="price-desc"><span data-nl>Voor serieuze kunstenaars en galerijen.</span><span data-en>For serious artists and galleries.</span></p>
       <ul class="price-features">
-        <li class="price-feature"><span data-nl>Onbeperkte afbeeldingen</span><span data-en>Unlimited images</span></li>
+        <li class="price-feature"><span data-nl>100 afbeeldingen/maand</span><span data-en>100 images/month</span></li>
         <li class="price-feature"><span data-nl>Tot 12.000px breedte</span><span data-en>Up to 12,000px wide</span></li>
         <li class="price-feature"><span data-nl>Alle algoritmes + combined</span><span data-en>All algorithms + combined</span></li>
         <li class="price-feature">CMYK channel-split</li>
@@ -334,8 +334,8 @@ body.lang-en [data-nl] { display: none !important; }
     </div>
     <div class="price-card">
       <div class="price-label">Studio</div>
-      <div class="price-amount"><sup>€</sup>79</div>
-      <div class="price-period"><span data-nl>per maand</span><span data-en>per month</span></div>
+      <div class="price-amount"><sup>€</sup>99</div>
+      <div class="price-period"><span data-nl>per maand, ex btw</span><span data-en>per month, excl. VAT</span></div>
       <div class="price-divider"></div>
       <p class="price-desc"><span data-nl>Voor platformen en galerijen die anderen beschermen.</span><span data-en>For platforms and galleries protecting others.</span></p>
       <ul class="price-features">
@@ -432,13 +432,11 @@ body.lang-en [data-nl] { display: none !important; }
             </select>
           </div>
           <div>
-            <div class="t-label"><span data-nl>Doelprinter</span><span data-en>Target printer</span></div>
-            <select class="t-select" id="printerTarget">
-              <option value="inkjet" data-nl="Inkjet" data-en="Inkjet">Inkjet</option>
-              <option value="laser" data-nl="Laser" data-en="Laser">Laser</option>
-              <option value="offset" selected data-nl="Offset (professioneel)" data-en="Offset (professional)">Offset (professioneel)</option>
-              <option value="all" data-nl="Alle methodes" data-en="All methods">Alle methodes</option>
-            </select>
+            <div class="t-label"><span data-nl>Printerbeveiliging</span><span data-en>Printer protection</span></div>
+            <div style="padding:9px 12px; border:0.5px solid var(--border-strong); background:var(--paper-warm); font-family:var(--font-mono); font-size:12px; color:var(--ink-muted); border-radius:2px;">
+              <span data-nl>Alle methodes — inkjet, laser, offset + AI-proof</span>
+              <span data-en>All methods — inkjet, laser, offset + AI-proof</span>
+            </div>
           </div>
         </div>
 
@@ -795,7 +793,7 @@ async function applyProtection() {
   fd.append('strength',       document.getElementById('strength').value);
   fd.append('channel_split',  document.getElementById('channelSplit').value);
   fd.append('freq_variation', document.getElementById('freqVar').value);
-  fd.append('printer_target', document.getElementById('printerTarget').value);
+  // printer_target is altijd 'all' (breedband) — ingesteld op de server;
 
   try {
     const t0 = Date.now();

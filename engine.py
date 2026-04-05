@@ -181,7 +181,7 @@ def apply_protection(
     strength=18,
     channel_split=12,
     freq_variation=3,
-    printer_target="offset",
+    printer_target="all",
     tile_height=TILE_HEIGHT,
     progress_callback=None,
 ):

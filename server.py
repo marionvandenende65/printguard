@@ -180,7 +180,7 @@ def protect():
     strength       = max(3,  min(45, int(request.form.get("strength",       18))))
     channel_split  = max(0,  min(30, int(request.form.get("channel_split",  12))))
     freq_variation = max(1,  min(8,  int(request.form.get("freq_variation",  3))))
-    printer_target = request.form.get("printer_target", "offset")
+    printer_target = "all"  # altijd breedband: offset + laser + inkjet + AI-proof
 
     t0 = time.time()
     protected = apply_protection(
@@ -295,12 +295,12 @@ def verify_hash():
 # ── Betaling (Mollie) ─────────────────────────────────────────────────────────
 
 PLAN_PRICES = {
-    ("starter",      "monthly"): ("9.00",   "PrintGuard Starter — maandelijks"),
-    ("starter",      "yearly"):  ("90.00",  "PrintGuard Starter — jaarlijks"),
-    ("professional", "monthly"): ("24.00",  "PrintGuard Professional — maandelijks"),
-    ("professional", "yearly"):  ("240.00", "PrintGuard Professional — jaarlijks"),
-    ("studio",       "monthly"): ("79.00",  "PrintGuard Studio — maandelijks"),
-    ("studio",       "yearly"):  ("790.00", "PrintGuard Studio — jaarlijks"),
+    ("starter",      "monthly"): ("19.00",  "PrintGuard Starter — maandelijks"),
+    ("starter",      "yearly"):  ("190.00", "PrintGuard Starter — jaarlijks"),
+    ("professional", "monthly"): ("49.00",  "PrintGuard Professional — maandelijks"),
+    ("professional", "yearly"):  ("490.00", "PrintGuard Professional — jaarlijks"),
+    ("studio",       "monthly"): ("99.00",  "PrintGuard Studio — maandelijks"),
+    ("studio",       "yearly"):  ("990.00", "PrintGuard Studio — jaarlijks"),
 }
 
 
