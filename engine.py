@@ -68,13 +68,14 @@ PRINTER_PROFILES = {
         "ai_disruption":   False,
     },
     "all": {
-        # Breedband: alle printertypen + fotolabs + AI-upscalers (Topaz, Real-ESRGAN)
+        # Breedband: alle printertypen + fotolabs + AI-upscalers + anti-screenshot
         "freq_bands":      [2, 3, 4, 6, 8],
         "channel_weight":  1.3,
         "angle_patterns":  True,
         "bayer_patterns":  True,
         "photolab_attack": True,
         "ai_disruption":   True,
+        "anti_screenshot": True,
     },
 }
 
@@ -288,6 +289,31 @@ def _process_strip(strip, y_offset, pattern, strength, channel_split, freq_varia
         noise_r += false_edge
         noise_b -= false_edge
         del false_edge
+
+    # ── Anti-screenshot moiré ─────────────────────────────────────────────────
+    # Voegt een regulier roosterpatroon toe op drie frequenties en hoeken.
+    # Op het scherm: volledig onzichtbaar (periode 3–5px bij ±2–3, onder JND).
+    # Bij fotograferen van het scherm met telefoon/camera: de sensorfrequentie
+    # klopt tegen ons patroon aan → zichtbare moiré-banden over de foto.
+    # Drie richtingen: horizontaal (0°), verticaal (90°), diagonaal (45°)
+    # zodat het patroon zichtbaar is ongeacht de hoek van de camera.
+    if profile.get("anti_screenshot", False):
+        ss = max(2, strength // 9)   # kleine amplitude → onzichtbaar op scherm
+
+        # Horizontale lijnen (3px periode) — beat met horizontale sensorsampling
+        h_moire = np.where(Y % 3 == 0, ss, 0).astype(np.int16)
+        noise_r += h_moire; noise_g += h_moire; noise_b += h_moire
+        del h_moire
+
+        # Verticale lijnen (4px periode) — beat met verticale sensorsampling
+        v_moire = np.where(X % 4 == 0, ss, 0).astype(np.int16)
+        noise_r += v_moire; noise_g += v_moire; noise_b += v_moire
+        del v_moire
+
+        # Diagonale lijnen (5px periode, 45°) — beat bij scheve camerahoek
+        d_moire = np.where((X + Y) % 5 == 0, ss - 1, 0).astype(np.int16)
+        noise_r += d_moire; noise_b += d_moire
+        del d_moire
 
     del X, Y
     strip[:, :, 0] = np.clip(strip[:, :, 0] + noise_r, 0, 255)

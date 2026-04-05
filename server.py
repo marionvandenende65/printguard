@@ -17,7 +17,7 @@ from flask import Flask, request, jsonify, send_file, send_from_directory
 from database import init_db
 from engine import apply_protection
 from certificate import generate_certificate, sha256_of_bytes
-from watermark import embed_watermark, detect_watermark
+from watermark import embed_watermark, detect_watermark, embed_dct_watermark, detect_dct_watermark
 from users import (
     check_password, get_usage, can_upload, record_upload,
     has_feature, get_user, create_user, upgrade_user, PLANS,
@@ -199,9 +199,11 @@ def protect():
     uname    = (user.get("name") or email.split("@")[0]) if user else email.split("@")[0]
     img_hash = sha256_of_bytes(img_bytes)
     cert_id  = f"PG-{img_hash[:12].upper()}"
-    prot_arr = __import__("numpy").array(protected)
-    prot_arr = embed_watermark(prot_arr, uname, cert_id, img_hash)
+    import numpy as _np
     from PIL import Image as _PIL
+    prot_arr = _np.array(protected)
+    prot_arr = embed_watermark(prot_arr, uname, cert_id, img_hash)      # Laag 1: LSB
+    prot_arr = embed_dct_watermark(prot_arr, uname, cert_id, img_hash)  # Laag 2: DCT
     protected = _PIL.fromarray(prot_arr, "RGB")
     if img.mode == "RGBA":
         protected.putalpha(img.split()[3])
@@ -330,11 +332,21 @@ def detect_wm():
         return jsonify({"error": "original_hash vereist (SHA-256 van het originele bestand)"}), 400
 
     from PIL import Image as _PIL
-    import numpy as np
+    import numpy as _np
     img = _PIL.open(io.BytesIO(img_bytes)).convert("RGB")
-    arr = np.array(img)
-    result = detect_watermark(arr, orig_hash)
-    return jsonify(result)
+    arr = _np.array(img)
+
+    # Probeer beide lagen — LSB eerst (preciezer), dan DCT (robuuster na JPEG)
+    result_lsb = detect_watermark(arr, orig_hash)
+    if result_lsb.get("found"):
+        result_lsb["layer"] = "LSB"
+        return jsonify(result_lsb)
+
+    result_dct = detect_dct_watermark(arr, orig_hash)
+    if result_dct.get("found"):
+        return jsonify(result_dct)
+
+    return jsonify({"found": False, "reason": "Geen PrintGuard-watermerk gevonden"})
 
 
 # ── Betaling (Mollie) ─────────────────────────────────────────────────────────
