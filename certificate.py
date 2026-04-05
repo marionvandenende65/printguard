@@ -284,13 +284,11 @@ def generate_certificate(
     c.drawString(margin + 8*mm, fy, footer_l)
     c.drawRightString(W - margin - 8*mm, fy, footer_r)
 
-    # ── Diagonale achtergrondtekst (subtiel) ──────────────────────────────────
+    # ── Subtiele achtergrondtekst ─────────────────────────────────────────────
     c.saveState()
-    c.setFillColor(HexColor("#f0ece5"))
-    c.setFont("Helvetica-Bold", 52)
-    c.translate(W/2, H/2)
-    c.rotate(35)
-    c.drawCentredString(0, 0, "PRINTGUARD")
+    c.setFillColor(HexColor("#ede8e0"))
+    c.setFont("Helvetica", 9)
+    c.drawRightString(W - margin - 8*mm, margin + 4*mm, "printguardtool.com")
     c.restoreState()
 
     c.save()

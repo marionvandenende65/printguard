@@ -54,7 +54,7 @@ def _seed_demo():
             """INSERT INTO users
                (email, password_hash, name, plan, billing, member_since, uploads_this_period, period_key)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            (demo_email, pw_hash, "Demo", "professional", "monthly",
-             "2026-03-15", 7, "2026-03-15"),
+            (demo_email, pw_hash, "Demo", "demo", "monthly",
+             "2026-03-15", 0, "2026-03-15"),
         )
         conn.commit()

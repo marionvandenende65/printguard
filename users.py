@@ -13,6 +13,15 @@ import bcrypt
 from database import get_db
 
 PLANS = {
+    "demo": {
+        "price_month":   0,
+        "price_year":    0,
+        "max_px":        4000,
+        "monthly_limit": 5,
+        "certificate":   False,
+        "batch":         False,
+        "registry":      False,
+    },
     "starter": {
         "price_month":   9,
         "price_year":    90,
