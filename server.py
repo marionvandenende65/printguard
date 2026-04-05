@@ -589,8 +589,12 @@ PLAN_PRICES = {
     ("starter",      "yearly"):  ("190.00", "PrintGuard Starter — jaarlijks"),
     ("professional", "monthly"): ("49.00",  "PrintGuard Professional — maandelijks"),
     ("professional", "yearly"):  ("490.00", "PrintGuard Professional — jaarlijks"),
-    ("studio",       "monthly"): ("99.00",  "PrintGuard Studio — maandelijks"),
-    ("studio",       "yearly"):  ("990.00", "PrintGuard Studio — jaarlijks"),
+    ("studio",               "monthly"): ("99.00",  "PrintGuard Studio — maandelijks"),
+    ("studio",               "yearly"):  ("990.00", "PrintGuard Studio — jaarlijks"),
+    ("design_professional",  "monthly"): ("29.00",  "DesignGuard Professional — maandelijks"),
+    ("design_professional",  "yearly"):  ("290.00", "DesignGuard Professional — jaarlijks"),
+    ("design_studio",        "monthly"): ("59.00",  "DesignGuard Studio — maandelijks"),
+    ("design_studio",        "yearly"):  ("590.00", "DesignGuard Studio — jaarlijks"),
 }
 
 

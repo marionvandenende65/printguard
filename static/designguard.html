@@ -62,8 +62,21 @@ h2 em { font-style:italic; }
 .legal-box p { font-size:0.9rem; color:var(--ink-muted); line-height:1.8; }
 .legal-box ul { margin-left:1.5rem; font-size:0.9rem; color:var(--ink-muted); line-height:2; }
 
-.pricing-note { margin-top:2rem; border:0.5px solid var(--border); padding:1.5rem 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; background:var(--paper-warm); }
-.pricing-note p { font-family:var(--font-mono); font-size:12px; color:var(--ink-muted); }
+.dg-plans { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:2rem; }
+.dg-plan { border:0.5px solid var(--border); padding:2rem; background:var(--paper-warm); }
+.dg-plan.featured { border-color:var(--accent); background:#fff; }
+.dg-plan-label { font-family:var(--font-mono); font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:0.5rem; }
+.dg-plan h3 { font-size:1.1rem; font-weight:600; margin-bottom:0.25rem; }
+.dg-price { font-family:var(--font-mono); margin:1rem 0; }
+.dg-price strong { font-size:2rem; font-weight:300; }
+.dg-price span { font-size:0.85rem; color:var(--ink-muted); }
+.dg-features { list-style:none; margin:1rem 0 1.5rem; font-size:0.9rem; color:var(--ink-muted); }
+.dg-features li { padding:4px 0; border-bottom:0.5px solid var(--border); }
+.dg-features li::before { content:"✓ "; color:var(--accent); font-family:var(--font-mono); }
+.dg-billing-toggle { display:flex; gap:0.5rem; margin-bottom:1rem; }
+.dg-billing-btn { font-family:var(--font-mono); font-size:10px; padding:4px 10px; border:0.5px solid var(--border-strong); background:transparent; cursor:pointer; border-radius:2px; color:var(--ink-muted); }
+.dg-billing-btn.active { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+@media (max-width:600px) { .dg-plans { grid-template-columns:1fr; } }
 
 .full-width { background:var(--ink); color:var(--paper); padding:5rem 3rem; text-align:center; }
 .full-width h2 { color:var(--paper); margin-bottom:1rem; }
@@ -242,36 +255,76 @@ body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lan
 </section>
 
 <!-- TARIEVEN -->
-<section class="section" style="border-top:0.5px solid var(--border);">
+<section class="section" id="tarieven" style="border-top:0.5px solid var(--border);">
   <div class="section-label">
-    <span data-nl>Toegang</span><span data-en>Access</span><span data-de>Zugang</span><span data-fr>Accès</span><span data-it>Accesso</span>
+    <span data-nl>Tarieven</span><span data-en>Pricing</span><span data-de>Preise</span><span data-fr>Tarifs</span><span data-it>Prezzi</span>
   </div>
-  <h2><span data-nl>Onderdeel van <em>PrintGuard Professional &amp; Studio</em></span><span data-en>Included in <em>PrintGuard Professional &amp; Studio</em></span><span data-de>Enthalten in <em>PrintGuard Professional &amp; Studio</em></span><span data-fr>Inclus dans <em>PrintGuard Professional &amp; Studio</em></span><span data-it>Incluso in <em>PrintGuard Professional &amp; Studio</em></span></h2>
-  <p style="color:var(--ink-muted);max-width:600px;font-size:0.95rem;line-height:1.8;margin-bottom:1.5rem;">
-    <span data-nl>DesignGuard maakt gebruik van hetzelfde certificaatplatform als PrintGuard. U heeft geen apart account nodig — het certificaat is beschikbaar voor alle Professional- en Studio-abonnees. Elke certificaat-aanvraag telt als één upload.</span>
-    <span data-en>DesignGuard uses the same certificate platform as PrintGuard. No separate account needed — the certificate is available to all Professional and Studio subscribers. Each certificate request counts as one upload.</span>
-    <span data-de>DesignGuard nutzt dieselbe Zertifikatsplattform wie PrintGuard. Kein separates Konto erforderlich — das Zertifikat steht allen Professional- und Studio-Abonnenten zur Verfügung. Jede Zertifikatsanfrage zählt als ein Upload.</span>
-    <span data-fr>DesignGuard utilise la même plateforme de certificats que PrintGuard. Pas de compte séparé nécessaire — le certificat est disponible pour tous les abonnés Professional et Studio. Chaque demande de certificat compte comme un upload.</span>
-    <span data-it>DesignGuard utilizza la stessa piattaforma di certificati di PrintGuard. Nessun account separato necessario — il certificato è disponibile per tutti gli abbonati Professional e Studio. Ogni richiesta di certificato conta come un upload.</span>
+  <h2><span data-nl>Certificaat-bescherming, <em>zonder printmodule</em></span><span data-en>Certificate protection, <em>without the print module</em></span><span data-de>Zertifikatsschutz, <em>ohne Druckmodul</em></span><span data-fr>Protection par certificat, <em>sans le module d'impression</em></span><span data-it>Protezione tramite certificato, <em>senza il modulo di stampa</em></span></h2>
+  <p style="color:var(--ink-muted);max-width:600px;font-size:0.95rem;line-height:1.8;margin:1rem 0 0.5rem;">
+    <span data-nl>DesignGuard gebruikt hetzelfde platform als PrintGuard — maar zonder de print-verstoringstechnologie. Daarom lagere prijs. Elke foto die u uploadt telt als één upload en levert een eigen certificaat op.</span>
+    <span data-en>DesignGuard uses the same platform as PrintGuard — but without the print disruption technology. Hence the lower price. Each photo you upload counts as one upload and generates its own certificate.</span>
+    <span data-de>DesignGuard nutzt dieselbe Plattform wie PrintGuard — aber ohne die Druckstörungstechnologie. Daher der niedrigere Preis. Jedes hochgeladene Foto zählt als ein Upload und erzeugt ein eigenes Zertifikat.</span>
+    <span data-fr>DesignGuard utilise la même plateforme que PrintGuard — mais sans la technologie de perturbation d'impression. D'où le prix inférieur. Chaque photo téléchargée compte comme un upload et génère son propre certificat.</span>
+    <span data-it>DesignGuard utilizza la stessa piattaforma di PrintGuard — ma senza la tecnologia di disturbo della stampa. Quindi il prezzo inferiore. Ogni foto caricata conta come un upload e genera il proprio certificato.</span>
   </p>
-  <div class="pricing-note">
-    <p>
-      <span data-nl>Professional — €49/maand · 100 uploads · Certificaat inbegrepen</span>
-      <span data-en>Professional — €49/month · 100 uploads · Certificate included</span>
-      <span data-de>Professional — €49/Monat · 100 Uploads · Zertifikat inklusive</span>
-      <span data-fr>Professional — 49 €/mois · 100 uploads · Certificat inclus</span>
-      <span data-it>Professional — €49/mese · 100 upload · Certificato incluso</span>
-      <br>
-      <span data-nl>Studio — €99/maand · Onbeperkt · Batch-upload · Prioriteit support</span>
-      <span data-en>Studio — €99/month · Unlimited · Batch upload · Priority support</span>
-      <span data-de>Studio — €99/Monat · Unbegrenzt · Batch-Upload · Prioritäts-Support</span>
-      <span data-fr>Studio — 99 €/mois · Illimité · Upload groupé · Support prioritaire</span>
-      <span data-it>Studio — €99/mese · Illimitato · Upload multiplo · Supporto prioritario</span>
-    </p>
-    <a class="btn-primary" href="/#pricing">
-      <span data-nl>Abonnement kiezen</span><span data-en>Choose a plan</span><span data-de>Plan wählen</span><span data-fr>Choisir un abonnement</span><span data-it>Scegli un piano</span>
-    </a>
+
+  <div class="dg-billing-toggle" style="margin-top:1.5rem;">
+    <button class="dg-billing-btn active" id="btnMonthly" onclick="setBilling('monthly')">
+      <span data-nl>Maandelijks</span><span data-en>Monthly</span><span data-de>Monatlich</span><span data-fr>Mensuel</span><span data-it>Mensile</span>
+    </button>
+    <button class="dg-billing-btn" id="btnYearly" onclick="setBilling('yearly')">
+      <span data-nl>Jaarlijks (−17%)</span><span data-en>Annual (−17%)</span><span data-de>Jährlich (−17%)</span><span data-fr>Annuel (−17%)</span><span data-it>Annuale (−17%)</span>
+    </button>
   </div>
+
+  <div class="dg-plans">
+    <div class="dg-plan">
+      <div class="dg-plan-label">DesignGuard</div>
+      <h3>Professional</h3>
+      <div class="dg-price">
+        <strong id="priceProf">€29</strong>
+        <span id="perProf"><span data-nl>/maand</span><span data-en>/month</span><span data-de>/Monat</span><span data-fr>/mois</span><span data-it>/mese</span></span>
+      </div>
+      <ul class="dg-features">
+        <li><span data-nl>100 certificaten per maand</span><span data-en>100 certificates per month</span><span data-de>100 Zertifikate pro Monat</span><span data-fr>100 certificats par mois</span><span data-it>100 certificati al mese</span></li>
+        <li><span data-nl>Tot 12.000px per foto</span><span data-en>Up to 12,000px per photo</span><span data-de>Bis zu 12.000px pro Foto</span><span data-fr>Jusqu'à 12 000px par photo</span><span data-it>Fino a 12.000px per foto</span></li>
+        <li>PDF + blockchain (.ots)</li>
+        <li><span data-nl>Certificaat-archief</span><span data-en>Certificate archive</span><span data-de>Zertifikatsarchiv</span><span data-fr>Archives des certificats</span><span data-it>Archivio certificati</span></li>
+        <li><span data-nl>Batch-upload</span><span data-en>Batch upload</span><span data-de>Batch-Upload</span><span data-fr>Upload groupé</span><span data-it>Upload multiplo</span></li>
+      </ul>
+      <button class="btn-primary" style="width:100%;" onclick="doBuy('design_professional')">
+        <span data-nl>Starten</span><span data-en>Get started</span><span data-de>Starten</span><span data-fr>Commencer</span><span data-it>Inizia</span>
+      </button>
+    </div>
+
+    <div class="dg-plan featured">
+      <div class="dg-plan-label">DesignGuard</div>
+      <h3>Studio</h3>
+      <div class="dg-price">
+        <strong id="priceStudio">€59</strong>
+        <span id="perStudio"><span data-nl>/maand</span><span data-en>/month</span><span data-de>/Monat</span><span data-fr>/mois</span><span data-it>/mese</span></span>
+      </div>
+      <ul class="dg-features">
+        <li><span data-nl>Onbeperkt certificaten</span><span data-en>Unlimited certificates</span><span data-de>Unbegrenzte Zertifikate</span><span data-fr>Certificats illimités</span><span data-it>Certificati illimitati</span></li>
+        <li><span data-nl>Tot 20.000px per foto</span><span data-en>Up to 20,000px per photo</span><span data-de>Bis zu 20.000px pro Foto</span><span data-fr>Jusqu'à 20 000px par photo</span><span data-it>Fino a 20.000px per foto</span></li>
+        <li>PDF + blockchain (.ots)</li>
+        <li><span data-nl>Certificaat-archief</span><span data-en>Certificate archive</span><span data-de>Zertifikatsarchiv</span><span data-fr>Archives des certificats</span><span data-it>Archivio certificati</span></li>
+        <li><span data-nl>Batch-upload</span><span data-en>Batch upload</span><span data-de>Batch-Upload</span><span data-fr>Upload groupé</span><span data-it>Upload multiplo</span></li>
+        <li><span data-nl>Prioriteit support</span><span data-en>Priority support</span><span data-de>Prioritäts-Support</span><span data-fr>Support prioritaire</span><span data-it>Supporto prioritario</span></li>
+      </ul>
+      <button class="btn-primary" style="width:100%;" onclick="doBuy('design_studio')">
+        <span data-nl>Starten</span><span data-en>Get started</span><span data-de>Starten</span><span data-fr>Commencer</span><span data-it>Inizia</span>
+      </button>
+    </div>
+  </div>
+
+  <p style="font-family:var(--font-mono);font-size:10px;color:var(--ink-muted);margin-top:1rem;">
+    <span data-nl>Prijzen excl. BTW. Jaarabonnement wordt ineens gefactureerd. Opzeggen kan altijd via uw account.</span>
+    <span data-en>Prices excl. VAT. Annual subscription billed upfront. Cancel anytime via your account.</span>
+    <span data-de>Preise zzgl. MwSt. Jahresabonnement wird einmalig berechnet. Kündigung jederzeit über Ihr Konto.</span>
+    <span data-fr>Prix HT. Abonnement annuel facturé en une fois. Résiliation possible à tout moment via votre compte.</span>
+    <span data-it>Prezzi IVA esclusa. Abbonamento annuale fatturato in anticipo. Disdetta in qualsiasi momento tramite il tuo account.</span>
+  </p>
 </section>
 
 <!-- CTA -->
@@ -295,6 +348,7 @@ body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lan
 </footer>
 
 <script>
+// Taal
 function setLang(lang) {
   document.body.className = 'lang-' + lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -308,6 +362,61 @@ function setLang(lang) {
   if (saved && langs.includes(saved)) setLang(saved);
   else setLang('nl');
 })();
+
+// Billing toggle
+let currentBilling = 'monthly';
+const PRICES = {
+  monthly: { prof: '€29', studio: '€59' },
+  yearly:  { prof: '€290', studio: '€590' },
+};
+function setBilling(b) {
+  currentBilling = b;
+  document.getElementById('btnMonthly').classList.toggle('active', b === 'monthly');
+  document.getElementById('btnYearly').classList.toggle('active', b === 'yearly');
+  document.getElementById('priceProf').textContent   = PRICES[b].prof;
+  document.getElementById('priceStudio').textContent = PRICES[b].studio;
+
+  // Per-label aanpassen
+  const lang = document.body.className.replace('lang-', '');
+  const perLabel = {
+    monthly: {nl:'/maand', en:'/month', de:'/Monat', fr:'/mois', it:'/mese'},
+    yearly:  {nl:'/jaar',  en:'/year',  de:'/Jahr',  fr:'/an',   it:'/anno'},
+  };
+  const lbl = perLabel[b][lang] || perLabel[b].nl;
+  ['perProf','perStudio'].forEach(id => {
+    document.getElementById(id).textContent = lbl;
+  });
+}
+
+// Checkout
+async function doBuy(plan) {
+  const emailInput = prompt(
+    document.body.classList.contains('lang-en') ? 'Your email address:' :
+    document.body.classList.contains('lang-de') ? 'Ihre E-Mail-Adresse:' :
+    document.body.classList.contains('lang-fr') ? 'Votre adresse e-mail :' :
+    document.body.classList.contains('lang-it') ? 'Il tuo indirizzo email:' :
+    'Uw e-mailadres:'
+  );
+  if (!emailInput || !emailInput.includes('@')) return;
+
+  try {
+    const res  = await fetch('/api/checkout', {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify({plan, billing: currentBilling, email: emailInput.trim().toLowerCase()}),
+    });
+    const data = await res.json();
+    if (data.checkout_url) {
+      window.location.href = data.checkout_url;
+    } else if (data.pending) {
+      alert(data.message || 'Betalingen worden binnenkort geactiveerd. Neem contact op via info@printguardtool.com');
+    } else {
+      alert(data.error || 'Er is iets misgegaan.');
+    }
+  } catch(e) {
+    alert('Verbindingsfout. Probeer het opnieuw.');
+  }
+}
 </script>
 </body>
 </html>

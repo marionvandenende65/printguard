@@ -58,6 +58,24 @@ PLANS = {
         "batch":         True,
         "registry":      True,
     },
+    "design_professional": {
+        "price_month":   29,
+        "price_year":    290,
+        "max_px":        12000,
+        "monthly_limit": 100,
+        "certificate":   True,
+        "batch":         True,
+        "registry":      False,
+    },
+    "design_studio": {
+        "price_month":   59,
+        "price_year":    590,
+        "max_px":        20000,
+        "monthly_limit": None,
+        "certificate":   True,
+        "batch":         True,
+        "registry":      True,
+    },
 }
 
 
