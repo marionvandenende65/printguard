@@ -7,7 +7,7 @@ Limietlogica:
   Studio      → altijd onbeperkt
 """
 
-import datetime, calendar
+import datetime, calendar, secrets, string
 from typing import Optional
 import bcrypt
 from database import get_db
@@ -46,7 +46,7 @@ PLANS = {
         "max_px":        12000,
         "monthly_limit": 100,
         "certificate":   True,
-        "batch":         False,
+        "batch":         True,
         "registry":      False,
     },
     "studio": {
@@ -66,18 +66,6 @@ def _today() -> datetime.date:
 
 
 def _period_start(member_since: str, billing: str) -> datetime.date:
-    """
-    Berekent de start van de huidige periode op basis van lidmaatschapsdatum.
-
-    Voorbeeld maandelijks, lid op 15 april:
-      - Op 10 mei  → periode start = 15 april
-      - Op 20 mei  → periode start = 15 mei
-      - Op 15 mei  → periode start = 15 mei  (reset op de dag zelf)
-
-    Voorbeeld jaarlijks, lid op 15 april 2026:
-      - Op 10 april 2027 → periode start = 15 april 2026
-      - Op 20 april 2027 → periode start = 15 april 2027
-    """
     since = datetime.date.fromisoformat(member_since)
     today = _today()
     day   = since.day
@@ -140,30 +128,31 @@ def check_password(email: str, password: str) -> bool:
     return bcrypt.checkpw(password.encode(), user["password_hash"].encode())
 
 
-def create_user(email: str, password: str, name: str, plan: str, billing: str) -> bool:
-    """Maak een nieuw account aan. Geeft False terug als email al bestaat."""
+def create_user(email: str, password: str, name: str, plan: str, billing: str,
+                referred_by: str = "") -> bool:
     pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     member_since = _today().isoformat()
     try:
         with get_db() as conn:
             conn.execute(
                 """INSERT INTO users
-                   (email, password_hash, name, plan, billing, member_since, period_key)
-                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                   (email, password_hash, name, plan, billing, member_since, period_key, referred_by)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                 (email.lower().strip(), pw_hash, name, plan, billing,
-                 member_since, member_since),
+                 member_since, member_since, referred_by or ""),
             )
             conn.commit()
+        if referred_by:
+            _increment_referral(referred_by)
         return True
     except Exception:
         return False
 
 
 def upgrade_user(email: str, plan: str, billing: str) -> bool:
-    """Upgrade plan van een bestaande gebruiker (na betaling)."""
     with get_db() as conn:
         result = conn.execute(
-            "UPDATE users SET plan=?, billing=? WHERE email=?",
+            "UPDATE users SET plan=?, billing=?, cancelled=0 WHERE email=?",
             (plan, billing, email.lower().strip()),
         )
         conn.commit()
@@ -171,7 +160,6 @@ def upgrade_user(email: str, plan: str, billing: str) -> bool:
 
 
 def _reset_if_new_period(user: dict) -> dict:
-    """Reset teller als we in een nieuwe periode zijn — schrijft naar DB."""
     current_key = _period_key(user["member_since"], user.get("billing", "monthly"))
     if user.get("period_key") != current_key:
         user["uploads_this_period"] = 0
@@ -229,9 +217,12 @@ def get_usage(email: str) -> dict:
         "member_since": since,
         "next_reset":   next_reset.isoformat(),
         "certificate":  plan["certificate"],
+        "batch":        plan["batch"],
         "registry":     plan["registry"],
         "max_px":       plan["max_px"],
         "name":         user.get("name") or email.split("@")[0],
+        "cancelled":    bool(user.get("cancelled", 0)),
+        "referral_code": user.get("referral_code") or "",
     }
 
 
@@ -267,3 +258,181 @@ def has_feature(email: str, feature: str) -> bool:
         return False
     plan = PLANS.get(user.get("plan", ""), {})
     return bool(plan.get(feature, False))
+
+
+# ── Wachtwoord reset ──────────────────────────────────────────────────────────
+
+def create_reset_token(email: str) -> Optional[str]:
+    user = get_user(email)
+    if not user:
+        return None
+    token = secrets.token_urlsafe(32)
+    expires = (datetime.datetime.utcnow() + datetime.timedelta(hours=2)).isoformat()
+    with get_db() as conn:
+        # Verwijder oude tokens voor dit e-mailadres
+        conn.execute("DELETE FROM reset_tokens WHERE email = ?", (email.lower().strip(),))
+        conn.execute(
+            "INSERT INTO reset_tokens (token, email, expires_at) VALUES (?, ?, ?)",
+            (token, email.lower().strip(), expires),
+        )
+        conn.commit()
+    return token
+
+
+def consume_reset_token(token: str, new_password: str) -> bool:
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT * FROM reset_tokens WHERE token = ? AND used = 0",
+            (token,)
+        ).fetchone()
+        if not row:
+            return False
+        expires = datetime.datetime.fromisoformat(row["expires_at"])
+        if datetime.datetime.utcnow() > expires:
+            return False
+        pw_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+        conn.execute(
+            "UPDATE users SET password_hash = ? WHERE email = ?",
+            (pw_hash, row["email"]),
+        )
+        conn.execute(
+            "UPDATE reset_tokens SET used = 1 WHERE token = ?", (token,)
+        )
+        conn.commit()
+    return True
+
+
+# ── Opzegging ─────────────────────────────────────────────────────────────────
+
+def cancel_subscription(email: str) -> bool:
+    with get_db() as conn:
+        result = conn.execute(
+            "UPDATE users SET cancelled = 1 WHERE email = ?",
+            (email.lower().strip(),),
+        )
+        conn.commit()
+        return result.rowcount > 0
+
+
+# ── Referral codes ────────────────────────────────────────────────────────────
+
+def _gen_code() -> str:
+    chars = string.ascii_uppercase + string.digits
+    return "PG-" + "".join(secrets.choice(chars) for _ in range(8))
+
+
+def get_referral_code(email: str) -> str:
+    user = get_user(email)
+    if not user:
+        return ""
+    if user.get("referral_code"):
+        return user["referral_code"]
+    # Genereer een nieuwe code
+    for _ in range(10):
+        code = _gen_code()
+        with get_db() as conn:
+            try:
+                conn.execute(
+                    "INSERT INTO referrals (code, owner) VALUES (?, ?)",
+                    (code, email.lower().strip()),
+                )
+                conn.execute(
+                    "UPDATE users SET referral_code = ? WHERE email = ?",
+                    (code, email.lower().strip()),
+                )
+                conn.commit()
+                return code
+            except Exception:
+                continue
+    return ""
+
+
+def validate_referral_code(code: str) -> Optional[str]:
+    """Geeft de owner-email terug als de code geldig is, anders None."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT owner FROM referrals WHERE code = ?", (code.upper().strip(),)
+        ).fetchone()
+        return row["owner"] if row else None
+
+
+def _increment_referral(code: str):
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE referrals SET uses = uses + 1 WHERE code = ?", (code,)
+        )
+        conn.commit()
+
+
+def get_referral_stats(email: str) -> dict:
+    code = get_referral_code(email)
+    if not code:
+        return {"code": "", "uses": 0}
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT uses FROM referrals WHERE code = ?", (code,)
+        ).fetchone()
+    return {"code": code, "uses": row["uses"] if row else 0}
+
+
+# ── Certificaat archief ───────────────────────────────────────────────────────
+
+def store_certificate(email: str, cert_id: str, title: str,
+                      file_hash: str, zip_bytes: bytes) -> bool:
+    try:
+        with get_db() as conn:
+            conn.execute(
+                """INSERT OR REPLACE INTO certificates
+                   (email, cert_id, title, file_hash, zip_blob)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (email.lower().strip(), cert_id, title, file_hash, zip_bytes),
+            )
+            conn.commit()
+        return True
+    except Exception as e:
+        print(f"[cert-archive] Fout bij opslaan {cert_id}: {e}")
+        return False
+
+
+def list_certificates(email: str) -> list:
+    with get_db() as conn:
+        rows = conn.execute(
+            """SELECT cert_id, title, file_hash, created_at
+               FROM certificates WHERE email = ?
+               ORDER BY created_at DESC""",
+            (email.lower().strip(),)
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def get_certificate_zip(email: str, cert_id: str) -> Optional[bytes]:
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT zip_blob FROM certificates WHERE email = ? AND cert_id = ?",
+            (email.lower().strip(), cert_id),
+        ).fetchone()
+    return bytes(row["zip_blob"]) if row else None
+
+
+# ── Demo rate-limiting ────────────────────────────────────────────────────────
+
+def can_demo(ip: str) -> bool:
+    """Max 1 demo per IP per 24 uur."""
+    cutoff = (datetime.datetime.utcnow() - datetime.timedelta(hours=24)).isoformat()
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT last_used FROM demo_usage WHERE ip = ?", (ip,)
+        ).fetchone()
+        if not row or row["last_used"] < cutoff:
+            return True
+    return False
+
+
+def record_demo(ip: str):
+    now = datetime.datetime.utcnow().isoformat()
+    with get_db() as conn:
+        conn.execute(
+            "INSERT OR REPLACE INTO demo_usage (ip, last_used) VALUES (?, ?)",
+            (ip, now),
+        )
+        conn.commit()

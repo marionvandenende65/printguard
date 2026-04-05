@@ -19,9 +19,48 @@ CREATE TABLE IF NOT EXISTS users (
     member_since         TEXT NOT NULL,
     uploads_this_period  INTEGER DEFAULT 0,
     period_key           TEXT,
+    referral_code        TEXT,
+    referred_by          TEXT,
+    cancelled            INTEGER DEFAULT 0,
     created_at           TEXT DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS reset_tokens (
+    token      TEXT PRIMARY KEY,
+    email      TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    used       INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS certificates (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    email      TEXT NOT NULL,
+    cert_id    TEXT NOT NULL UNIQUE,
+    title      TEXT,
+    file_hash  TEXT,
+    zip_blob   BLOB,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS referrals (
+    code       TEXT PRIMARY KEY,
+    owner      TEXT NOT NULL,
+    uses       INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS demo_usage (
+    ip        TEXT PRIMARY KEY,
+    last_used TEXT NOT NULL
+);
 """
+
+# Migraties voor bestaande databases (kolommen toevoegen zonder data te verliezen)
+_MIGRATIONS = [
+    "ALTER TABLE users ADD COLUMN referral_code TEXT",
+    "ALTER TABLE users ADD COLUMN referred_by TEXT",
+    "ALTER TABLE users ADD COLUMN cancelled INTEGER DEFAULT 0",
+]
 
 
 def get_db():
@@ -31,16 +70,27 @@ def get_db():
 
 
 def init_db():
-    """Maak tabellen aan en voeg demo-account toe als het nog niet bestaat."""
+    """Maak tabellen aan, voer migraties uit, voeg demo-account toe."""
     with get_db() as conn:
         conn.executescript(SCHEMA)
         conn.commit()
 
+    _run_migrations()
     _seed_demo()
 
 
+def _run_migrations():
+    with get_db() as conn:
+        for sql in _MIGRATIONS:
+            try:
+                conn.execute(sql)
+                conn.commit()
+            except Exception:
+                pass  # kolom bestaat al
+
+
 def _seed_demo():
-    """Demo-account voor testen. Wordt overgeslagen als het al bestaat."""
+    """Demo-account voor testen."""
     demo_email = "demo@printguardtool.com"
     with get_db() as conn:
         exists = conn.execute(

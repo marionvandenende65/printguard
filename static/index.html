@@ -201,9 +201,30 @@ footer { background: var(--ink); color: var(--paper); padding: 3rem; display: gr
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-body.lang-nl [data-en] { display: none !important; }
-body.lang-en [data-nl] { display: none !important; }
+body.lang-nl [data-en], body.lang-nl [data-de], body.lang-nl [data-fr], body.lang-nl [data-it] { display: none !important; }
+body.lang-en [data-nl], body.lang-en [data-de], body.lang-en [data-fr], body.lang-en [data-it] { display: none !important; }
+body.lang-de [data-nl], body.lang-de [data-en], body.lang-de [data-fr], body.lang-de [data-it] { display: none !important; }
+body.lang-fr [data-nl], body.lang-fr [data-en], body.lang-fr [data-de], body.lang-fr [data-it] { display: none !important; }
+body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lang-it [data-fr] { display: none !important; }
 .hidden { display: none !important; }
+.account-panel { margin-top:1.5rem; border-top:0.5px solid var(--border); padding-top:1.5rem; display:grid; gap:1rem; }
+.account-card { background:var(--paper-warm); border:0.5px solid var(--border); padding:1rem 1.2rem; font-family:var(--font-mono); font-size:11px; }
+.account-card h4 { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:0.6rem; }
+.ref-code { display:flex; align-items:center; gap:0.5rem; }
+.ref-code strong { letter-spacing:0.12em; color:var(--ink); font-size:13px; }
+.btn-copy { padding:4px 10px; font-family:var(--font-mono); font-size:10px; background:var(--ink); color:var(--paper); border:none; cursor:pointer; border-radius:2px; }
+.btn-cancel { padding:8px 16px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; background:transparent; color:#b71c1c; border:0.5px solid #b71c1c; cursor:pointer; border-radius:2px; }
+.btn-cancel:hover { background:#b71c1c; color:#fff; }
+.arch-list { margin-top:0.5rem; }
+.arch-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:0.5px solid var(--border); font-size:11px; }
+.arch-item:last-child { border-bottom:none; }
+.arch-item a { font-family:var(--font-mono); font-size:10px; color:var(--accent); text-decoration:none; }
+.batch-drop { border:0.5px dashed var(--border-strong); padding:1.5rem; text-align:center; cursor:pointer; background:var(--paper-warm); border-radius:2px; font-family:var(--font-mono); font-size:11px; color:var(--ink-muted); }
+.batch-drop:hover { border-color:var(--accent); color:var(--accent); }
+.forgot-link { font-family:var(--font-mono); font-size:10px; color:var(--ink-muted); text-decoration:none; display:block; margin-top:6px; text-align:right; }
+.forgot-link:hover { color:var(--accent); }
+.demo-strip { background:var(--paper-warm); border:0.5px solid var(--border); padding:1rem 1.5rem; margin-top:1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.demo-strip p { font-family:var(--font-mono); font-size:11px; color:var(--ink-muted); }
 
 @media (max-width: 900px) {
   nav { padding: 0 1.5rem; }
@@ -226,15 +247,19 @@ body.lang-en [data-nl] { display: none !important; }
 <nav>
   <a class="nav-logo" href="#">Print<span>Guard</span></a>
   <div class="nav-links">
-    <a href="#how"><span data-nl>Hoe het werkt</span><span data-en>How it works</span></a>
-    <a href="#pricing"><span data-nl>Tarieven</span><span data-en>Pricing</span></a>
-    <a href="#tool-section"><span data-nl>Inloggen</span><span data-en>Sign in</span></a>
+    <a href="#how"><span data-nl>Hoe het werkt</span><span data-en>How it works</span><span data-de>So funktioniert's</span><span data-fr>Comment ça marche</span><span data-it>Come funziona</span></a>
+    <a href="#pricing"><span data-nl>Tarieven</span><span data-en>Pricing</span><span data-de>Preise</span><span data-fr>Tarifs</span><span data-it>Prezzi</span></a>
+    <a href="/vergelijking"><span data-nl>Vergelijking</span><span data-en>Compare</span><span data-de>Vergleich</span><span data-fr>Comparaison</span><span data-it>Confronto</span></a>
+    <a href="#tool-section"><span data-nl>Inloggen</span><span data-en>Sign in</span><span data-de>Anmelden</span><span data-fr>Connexion</span><span data-it>Accedi</span></a>
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('nl')">NL</button>
       <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('de')">DE</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('it')">IT</button>
     </div>
   </div>
-  <a href="#tool-section" class="nav-cta"><span data-nl>Probeer nu</span><span data-en>Try now</span></a>
+  <a href="#tool-section" class="nav-cta"><span data-nl>Probeer nu</span><span data-en>Try now</span><span data-de>Jetzt testen</span><span data-fr>Essayer</span><span data-it>Prova ora</span></a>
 </nav>
 
 <section class="hero">
@@ -242,21 +267,36 @@ body.lang-en [data-nl] { display: none !important; }
   <div class="hero-eyebrow">
     <span data-nl>Kunstbescherming · Onzichtbare technologie</span>
     <span data-en>Art Protection · Invisible Technology</span>
+    <span data-de>Kunstschutz · Unsichtbare Technologie</span>
+    <span data-fr>Protection artistique · Technologie invisible</span>
+    <span data-it>Protezione artistica · Tecnologia invisibile</span>
   </div>
   <h1>
     <span data-nl>Bescherm uw kunst.<br><em>Onzichtbaar.</em><br>Onbreekbaar.</span>
     <span data-en>Protect your art.<br><em>Invisible.</em><br>Unbreakable.</span>
+    <span data-de>Schützen Sie Ihre Kunst.<br><em>Unsichtbar.</em><br>Unzerstörbar.</span>
+    <span data-fr>Protégez votre art.<br><em>Invisible.</em><br>Inviolable.</span>
+    <span data-it>Proteggi la tua arte.<br><em>Invisibile.</em><br>Inviolabile.</span>
   </h1>
   <p class="hero-sub">
     <span data-nl>PrintGuard voegt onzichtbare pixel-patronen toe aan uw schilderijen die elke poging tot printen saboteren — zonder dat u of uw kopers het verschil zien.</span>
     <span data-en>PrintGuard embeds invisible pixel patterns into your artwork that sabotage any printing attempt — without you or your buyers ever noticing the difference.</span>
+    <span data-de>PrintGuard bettet unsichtbare Pixelmuster in Ihre Kunstwerke ein, die jeden Druckversuch sabotieren — ohne dass Sie oder Ihre Käufer den Unterschied sehen.</span>
+    <span data-fr>PrintGuard intègre des motifs de pixels invisibles dans vos œuvres qui sabotent toute tentative d'impression — sans que vous ou vos acheteurs ne voient la différence.</span>
+    <span data-it>PrintGuard incorpora pattern di pixel invisibili nelle tue opere che sabotano ogni tentativo di stampa — senza che tu o i tuoi acquirenti notino la differenza.</span>
   </p>
   <div class="hero-actions">
     <button class="btn-primary" onclick="document.getElementById('tool-section').scrollIntoView({behavior:'smooth'})">
-      <span data-nl>Bescherming toepassen</span><span data-en>Apply protection</span>
+      <span data-nl>Bescherming toepassen</span><span data-en>Apply protection</span><span data-de>Schutz anwenden</span><span data-fr>Appliquer la protection</span><span data-it>Applica protezione</span>
     </button>
     <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">
-      <span data-nl>Meer leren</span><span data-en>Learn more</span>
+      <span data-nl>Meer leren</span><span data-en>Learn more</span><span data-de>Mehr erfahren</span><span data-fr>En savoir plus</span><span data-it>Scopri di più</span>
+    </button>
+  </div>
+  <div class="demo-strip">
+    <p><span data-nl>Eerst proberen zonder account?</span><span data-en>Want to try without an account?</span><span data-de>Erst ohne Konto ausprobieren?</span><span data-fr>Essayer sans compte ?</span><span data-it>Vuoi provare senza account?</span></p>
+    <button class="btn-ghost" onclick="document.getElementById('demoStrip').scrollIntoView({behavior:'smooth'})">
+      <span data-nl>Gratis demo →</span><span data-en>Free demo →</span><span data-de>Kostenlose Demo →</span><span data-fr>Démo gratuite →</span><span data-it>Demo gratuita →</span>
     </button>
   </div>
   <div class="hero-badge"><div class="hero-badge-inner">PRINT · GUARD · ART · PROTECTION · INVISIBLE · TECH ·</div></div>
@@ -448,8 +488,26 @@ body.lang-en [data-nl] { display: none !important; }
         <span data-nl>Inloggen</span><span data-en>Sign in</span>
       </button>
     </div>
-    <p class="login-note"><span data-nl>Nog geen account? Kies een abonnement hierboven.</span><span data-en>No account yet? Choose a plan above.</span></p>
-    <p class="login-demo-hint" onclick="fillDemo()"><span data-nl>→ Gebruik demo-account om te testen</span><span data-en>→ Use demo account to test</span></p>
+    <a class="forgot-link" href="#" onclick="showForgot(event)">
+      <span data-nl>Wachtwoord vergeten?</span><span data-en>Forgot password?</span><span data-de>Passwort vergessen?</span><span data-fr>Mot de passe oublié ?</span><span data-it>Password dimenticata?</span>
+    </a>
+    <p class="login-note"><span data-nl>Nog geen account? Kies een abonnement hierboven.</span><span data-en>No account yet? Choose a plan above.</span><span data-de>Noch kein Konto? Wählen Sie oben ein Abonnement.</span><span data-fr>Pas encore de compte ? Choisissez un abonnement ci-dessus.</span><span data-it>Nessun account? Scegli un abbonamento sopra.</span></p>
+    <p class="login-demo-hint" onclick="fillDemo()"><span data-nl>→ Gebruik demo-account om te testen</span><span data-en>→ Use demo account to test</span><span data-de>→ Demo-Konto zum Testen verwenden</span><span data-fr>→ Utiliser le compte démo pour tester</span><span data-it>→ Usa l'account demo per testare</span></p>
+    <!-- Wachtwoord vergeten formulier (verborgen) -->
+    <div id="forgotForm" style="display:none;margin-top:1rem;border-top:0.5px solid var(--border);padding-top:1rem;">
+      <p style="font-family:var(--font-mono);font-size:10px;color:var(--ink-muted);margin-bottom:8px;">
+        <span data-nl>Voer uw e-mailadres in — u ontvangt een resetlink.</span>
+        <span data-en>Enter your email — you'll receive a reset link.</span>
+        <span data-de>E-Mail eingeben — Sie erhalten einen Reset-Link.</span>
+        <span data-fr>Entrez votre e-mail — vous recevrez un lien de réinitialisation.</span>
+        <span data-it>Inserisci la tua email — riceverai un link di reset.</span>
+      </p>
+      <input id="forgotEmail" type="email" placeholder="naam@voorbeeld.nl" style="width:100%;padding:9px 12px;border:0.5px solid var(--border-strong);background:var(--paper);font-family:var(--font-mono);font-size:12px;color:var(--ink);border-radius:2px;outline:none;margin-bottom:8px;">
+      <button onclick="doForgotPassword()" style="width:100%;padding:10px;background:var(--ink);color:var(--paper);border:none;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;">
+        <span data-nl>Resetlink sturen</span><span data-en>Send reset link</span><span data-de>Reset-Link senden</span><span data-fr>Envoyer le lien</span><span data-it>Invia link</span>
+      </button>
+      <p id="forgotStatus" style="font-family:var(--font-mono);font-size:11px;margin-top:8px;display:none;"></p>
+    </div>
     <p id="loginErr" style="font-family:var(--font-mono);font-size:11px;color:#c0392b;margin-top:8px;display:none;">
       <span data-nl>Onjuiste gegevens. Probeer: demo@printguardtool.com / demo123</span>
       <span data-en>Incorrect credentials. Try: demo@printguardtool.com / demo123</span>
@@ -592,7 +650,105 @@ body.lang-en [data-nl] { display: none !important; }
         </div>
 
       </div>
+
+      <!-- BATCH UPLOAD (Professional & Studio) -->
+      <div id="batchSection" class="hidden" style="margin-top:2rem;border-top:0.5px solid var(--border);padding-top:1.5rem;">
+        <div class="t-label" style="margin-bottom:0.5rem;">
+          <span data-nl>Batch-upload — meerdere werken tegelijk</span>
+          <span data-en>Batch upload — multiple artworks at once</span>
+          <span data-de>Batch-Upload — mehrere Werke gleichzeitig</span>
+          <span data-fr>Upload groupé — plusieurs œuvres à la fois</span>
+          <span data-it>Upload multiplo — più opere contemporaneamente</span>
+        </div>
+        <div class="batch-drop" onclick="document.getElementById('batchInput').click()">
+          <input type="file" id="batchInput" accept="image/*" multiple style="display:none" onchange="handleBatchSelect(this.files)">
+          <span data-nl>Klik of sleep meerdere afbeeldingen — max 20 per keer</span>
+          <span data-en>Click or drop multiple images — max 20 at a time</span>
+          <span data-de>Klicken oder mehrere Bilder ablegen — max. 20 auf einmal</span>
+          <span data-fr>Cliquez ou déposez plusieurs images — max. 20 à la fois</span>
+          <span data-it>Clicca o trascina più immagini — max. 20 alla volta</span>
+        </div>
+        <p id="batchStatus" style="font-family:var(--font-mono);font-size:11px;margin-top:8px;display:none;"></p>
+      </div>
+
+      <!-- CERTIFICAAT ARCHIEF -->
+      <div id="archiveSection" class="hidden" style="margin-top:2rem;border-top:0.5px solid var(--border);padding-top:1.5rem;">
+        <div class="t-label" style="margin-bottom:0.5rem;">
+          <span data-nl>Certificaat-archief</span>
+          <span data-en>Certificate archive</span>
+          <span data-de>Zertifikatsarchiv</span>
+          <span data-fr>Archives des certificats</span>
+          <span data-it>Archivio certificati</span>
+        </div>
+        <div id="archiveList" class="arch-list">
+          <p style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);">
+            <span data-nl>Uw certificaten worden hier geladen…</span>
+            <span data-en>Loading your certificates…</span>
+            <span data-de>Ihre Zertifikate werden geladen…</span>
+            <span data-fr>Chargement de vos certificats…</span>
+            <span data-it>Caricamento dei tuoi certificati…</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- ACCOUNT PANEEL -->
+      <div id="accountPanel" class="account-panel">
+        <div class="account-card">
+          <h4><span data-nl>Referralcode</span><span data-en>Referral code</span><span data-de>Empfehlungscode</span><span data-fr>Code de parrainage</span><span data-it>Codice referral</span></h4>
+          <p style="color:var(--ink-muted);margin-bottom:0.5rem;font-size:10px;">
+            <span data-nl>Deel deze code — voor elke nieuwe abonnee een gratis maand voor u beiden.</span>
+            <span data-en>Share this code — for each new subscriber, a free month for both of you.</span>
+            <span data-de>Teilen Sie diesen Code — für jeden neuen Abonnenten einen Gratismonat für Sie beide.</span>
+            <span data-fr>Partagez ce code — pour chaque nouvel abonné, un mois gratuit pour vous deux.</span>
+            <span data-it>Condividi questo codice — per ogni nuovo abbonato, un mese gratis per entrambi.</span>
+          </p>
+          <div class="ref-code">
+            <strong id="refCodeDisplay">—</strong>
+            <button class="btn-copy" onclick="copyReferral()">
+              <span data-nl>Kopiëren</span><span data-en>Copy</span><span data-de>Kopieren</span><span data-fr>Copier</span><span data-it>Copia</span>
+            </button>
+          </div>
+          <p id="refUses" style="margin-top:6px;color:var(--ink-muted);font-size:10px;"></p>
+        </div>
+        <div class="account-card">
+          <h4><span data-nl>Abonnement opzeggen</span><span data-en>Cancel subscription</span><span data-de>Abonnement kündigen</span><span data-fr>Résilier l'abonnement</span><span data-it>Annulla abbonamento</span></h4>
+          <p style="color:var(--ink-muted);margin-bottom:0.75rem;font-size:10px;" id="cancelInfo">
+            <span data-nl>U behoudt toegang tot het einde van uw huidige periode.</span>
+            <span data-en>You retain access until the end of your current period.</span>
+            <span data-de>Sie behalten Zugang bis zum Ende Ihrer aktuellen Periode.</span>
+            <span data-fr>Vous conservez l'accès jusqu'à la fin de votre période en cours.</span>
+            <span data-it>Mantieni l'accesso fino alla fine del periodo corrente.</span>
+          </p>
+          <button class="btn-cancel" id="cancelBtn" onclick="doCancel()">
+            <span data-nl>Abonnement opzeggen</span><span data-en>Cancel subscription</span><span data-de>Abonnement kündigen</span><span data-fr>Résilier</span><span data-it>Annulla</span>
+          </button>
+          <p id="cancelStatus" style="font-family:var(--font-mono);font-size:11px;margin-top:8px;display:none;"></p>
+        </div>
+      </div>
+
     </div>
+  </div>
+</section>
+
+<!-- DEMO SECTIE (geen account vereist) -->
+<section class="section" id="demoStrip" style="background:var(--paper-warm);border-top:0.5px solid var(--border);">
+  <div class="section-label">
+    <span data-nl>Probeer gratis</span><span data-en>Try for free</span><span data-de>Kostenlos ausprobieren</span><span data-fr>Essai gratuit</span><span data-it>Prova gratuita</span>
+  </div>
+  <h2><span data-nl>Bescherming <em>ervaren</em> zonder account</span><span data-en>Experience protection <em>without</em> an account</span><span data-de>Schutz <em>erleben</em> ohne Konto</span><span data-fr><em>Découvrez</em> la protection sans compte</span><span data-it><em>Prova</em> la protezione senza account</span></h2>
+  <p style="color:var(--ink-muted);font-size:0.95rem;max-width:560px;margin:1rem 0 2rem;">
+    <span data-nl>Upload één afbeelding (max 2.400px · 1× per dag) en download de beschermde versie direct. Gratis, zonder registratie. Voor het certificaat en hogere resoluties heeft u een account nodig.</span>
+    <span data-en>Upload one image (max 2,400px · 1× per day) and download the protected version instantly. Free, no registration. A certificate and higher resolutions require an account.</span>
+    <span data-de>Ein Bild hochladen (max. 2.400px · 1× täglich) und die geschützte Version sofort herunterladen. Kostenlos, ohne Registrierung. Zertifikat und höhere Auflösungen erfordern ein Konto.</span>
+    <span data-fr>Téléchargez une image (max. 2 400px · 1× par jour) et téléchargez la version protégée instantanément. Gratuit, sans inscription. Le certificat et les résolutions supérieures nécessitent un compte.</span>
+    <span data-it>Carica un'immagine (max. 2.400px · 1× al giorno) e scarica la versione protetta immediatamente. Gratuito, senza registrazione. Il certificato e le risoluzioni superiori richiedono un account.</span>
+  </p>
+  <div style="max-width:480px;">
+    <div class="batch-drop" onclick="document.getElementById('demoFileInput').click()" id="demoDrop">
+      <input type="file" id="demoFileInput" accept="image/*" style="display:none" onchange="runDemo(this.files[0])">
+      <span data-nl>Klik om een afbeelding te kiezen</span><span data-en>Click to choose an image</span><span data-de>Klicken, um ein Bild auszuwählen</span><span data-fr>Cliquez pour choisir une image</span><span data-it>Clicca per scegliere un'immagine</span>
+    </div>
+    <p id="demoStatus" style="font-family:var(--font-mono);font-size:11px;margin-top:10px;display:none;"></p>
   </div>
 </section>
 
@@ -652,9 +808,10 @@ body.lang-en [data-nl] { display: none !important; }
   <div class="footer-col">
     <h4><span data-nl>Product</span><span data-en>Product</span></h4>
     <a href="#how"><span data-nl>Hoe het werkt</span><span data-en>How it works</span></a>
-    <a href="#protection"><span data-nl>Bescherming</span><span data-en>Protection</span></a>
-    <a href="#pricing"><span data-nl>Tarieven</span><span data-en>Pricing</span></a>
-    <a href="#tool-section"><span data-nl>Dashboard</span><span data-en>Dashboard</span></a>
+    <a href="#protection"><span data-nl>Bescherming</span><span data-en>Protection</span><span data-de>Schutz</span><span data-fr>Protection</span><span data-it>Protezione</span></a>
+    <a href="#pricing"><span data-nl>Tarieven</span><span data-en>Pricing</span><span data-de>Preise</span><span data-fr>Tarifs</span><span data-it>Prezzi</span></a>
+    <a href="/vergelijking"><span data-nl>Vergelijking</span><span data-en>Compare</span><span data-de>Vergleich</span><span data-fr>Comparaison</span><span data-it>Confronto</span></a>
+    <a href="#tool-section"><span data-nl>Dashboard</span><span data-en>Dashboard</span><span data-de>Dashboard</span><span data-fr>Tableau de bord</span><span data-it>Dashboard</span></a>
   </div>
   <div class="footer-col">
     <h4><span data-nl>Juridisch</span><span data-en>Legal</span></h4>
@@ -670,35 +827,42 @@ body.lang-en [data-nl] { display: none !important; }
 
 <script>
 // ── Language ──────────────────────────────────────────────────────────────
+const LANGS = ['nl','en','de','fr','it'];
 function setLang(lang) {
   document.body.className = 'lang-' + lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.lang-btn[onclick*="${lang}"]`).classList.add('active');
-  // Vertalingen in select-opties bijwerken
+  const btn = document.querySelector(`.lang-btn[onclick*="'${lang}'"]`);
+  if (btn) btn.classList.add('active');
   document.querySelectorAll('option[data-' + lang + ']').forEach(opt => {
     opt.textContent = opt.getAttribute('data-' + lang);
   });
-  // URL aanpassen zonder page reload
-  const isNl = lang === 'nl';
-  const target = isNl ? '/nl/' : '/';
+  const urlMap = {nl:'/nl/', en:'/', de:'/de/', fr:'/fr/', it:'/it/'};
+  const target = urlMap[lang] || '/';
   if (window.location.pathname !== target) {
     history.pushState({lang}, '', target);
   }
+  localStorage.setItem('pg_lang', lang);
 }
-function getLang() { return document.body.classList.contains('lang-nl') ? 'nl' : 'en'; }
-
-// Taal instellen op basis van URL-pad
-(function() {
-  const path = window.location.pathname;
-  if (path === '/' || path === '') {
-    setLang('en');
-  } else if (path.startsWith('/nl')) {
-    setLang('nl');
+function getLang() {
+  for (const l of LANGS) {
+    if (document.body.classList.contains('lang-' + l)) return l;
   }
-  // Terug-knop in browser volgen
-  window.addEventListener('popstate', function(e) {
-    if (e.state && e.state.lang) setLang(e.state.lang);
-  });
+  return 'nl';
+}
+
+(function() {
+  const saved = localStorage.getItem('pg_lang');
+  const path  = window.location.pathname;
+  let lang = 'nl';
+  if (path.startsWith('/en'))       lang = 'en';
+  else if (path.startsWith('/de'))  lang = 'de';
+  else if (path.startsWith('/fr'))  lang = 'fr';
+  else if (path.startsWith('/it'))  lang = 'it';
+  else if (path === '/' || path === '') lang = 'en';
+  else if (path.startsWith('/nl')) lang = 'nl';
+  else if (saved && LANGS.includes(saved)) lang = saved;
+  setLang(lang);
+  window.addEventListener('popstate', e => { if (e.state && e.state.lang) setLang(e.state.lang); });
 })();
 
 // ── Pixel demo animation ──────────────────────────────────────────────────
@@ -824,6 +988,7 @@ async function doLogin() {
       document.getElementById('tool-app').style.display   = 'block';
       updateUsageBar(data.usage);
       initDropzone();
+      afterLogin(data.usage);
     } else {
       err.style.display = 'block';
     }
@@ -841,6 +1006,257 @@ async function doLogout() {
   document.getElementById('loginWall').style.display  = 'block';
   document.getElementById('tool-app').style.display   = 'none';
   document.getElementById('toolMain').classList.add('hidden');
+}
+
+// ── Na login: archief, batch, referral, cancel tonen ─────────────────────
+function afterLogin(usage) {
+  // Batch sectie tonen voor professional & studio
+  if (usage.batch) {
+    document.getElementById('batchSection').classList.remove('hidden');
+  }
+  // Certificaat archief tonen voor professional & studio
+  if (usage.certificate) {
+    document.getElementById('archiveSection').classList.remove('hidden');
+    loadCertArchive();
+  }
+  // Referral code laden
+  loadReferral();
+  // Cancel knop verbergen als al opgezegd
+  if (usage.cancelled) {
+    document.getElementById('cancelBtn').disabled = true;
+    document.getElementById('cancelInfo').innerHTML =
+      '<span style="color:#2e7d32;">&#10003; Abonnement is opgezegd — toegang tot ' + usage.next_reset + '</span>';
+  }
+}
+
+// ── Wachtwoord vergeten ───────────────────────────────────────────────────
+function showForgot(e) {
+  e.preventDefault();
+  const f = document.getElementById('forgotForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+async function doForgotPassword() {
+  const email  = document.getElementById('forgotEmail').value.trim();
+  const status = document.getElementById('forgotStatus');
+  if (!email) return;
+  status.style.display  = 'none';
+  try {
+    await fetch('/api/forgot-password', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email}),
+    });
+  } catch(_) {}
+  status.style.display  = 'block';
+  status.style.color    = '#2e7d32';
+  const l = getLang();
+  const msgs = {
+    nl: 'Als dit e-mailadres bekend is, ontvangt u een resetlink.',
+    en: 'If this email address is known, you will receive a reset link.',
+    de: 'Wenn diese E-Mail-Adresse bekannt ist, erhalten Sie einen Reset-Link.',
+    fr: 'Si cette adresse e-mail est connue, vous recevrez un lien de réinitialisation.',
+    it: 'Se questo indirizzo email è noto, riceverai un link di reset.',
+  };
+  status.textContent = msgs[l] || msgs.nl;
+}
+
+// ── Opzegging ─────────────────────────────────────────────────────────────
+async function doCancel() {
+  const lang = getLang();
+  const msgs = {
+    nl: 'Weet u zeker dat u wilt opzeggen? U behoudt toegang tot het einde van uw periode.',
+    en: 'Are you sure you want to cancel? You retain access until the end of your period.',
+    de: 'Möchten Sie wirklich kündigen? Sie behalten Zugang bis zum Ende Ihrer Periode.',
+    fr: 'Êtes-vous sûr de vouloir résilier ? Vous conservez l\'accès jusqu\'à la fin de votre période.',
+    it: 'Sei sicuro di voler annullare? Mantieni l\'accesso fino alla fine del periodo.',
+  };
+  if (!confirm(msgs[lang] || msgs.nl)) return;
+
+  const btn    = document.getElementById('cancelBtn');
+  const status = document.getElementById('cancelStatus');
+  btn.disabled = true;
+  try {
+    const res  = await fetch('/api/cancel', {method:'POST', headers:{'X-Token': sessionToken}});
+    const data = await res.json();
+    status.style.display = 'block';
+    if (data.ok) {
+      status.style.color = '#2e7d32';
+      const ok = {nl:`Opgezegd. Toegang tot ${data.access_until}.`, en:`Cancelled. Access until ${data.access_until}.`,
+                  de:`Gekündigt. Zugang bis ${data.access_until}.`, fr:`Résilié. Accès jusqu'au ${data.access_until}.`,
+                  it:`Annullato. Accesso fino al ${data.access_until}.`};
+      status.textContent = ok[lang] || ok.nl;
+      btn.disabled = true;
+    } else {
+      status.style.color = 'var(--accent)';
+      status.textContent = data.error || 'Er is iets misgegaan.';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    status.style.display = 'block';
+    status.style.color   = 'var(--accent)';
+    status.textContent   = 'Verbindingsfout.';
+    btn.disabled = false;
+  }
+}
+
+// ── Referral ──────────────────────────────────────────────────────────────
+async function loadReferral() {
+  try {
+    const res  = await fetch('/api/referral', {headers:{'X-Token': sessionToken}});
+    const data = await res.json();
+    if (data.code) {
+      document.getElementById('refCodeDisplay').textContent = data.code;
+      const lang = getLang();
+      const used = {nl:`${data.uses} keer gebruikt`, en:`Used ${data.uses} times`,
+                    de:`${data.uses}× verwendet`, fr:`Utilisé ${data.uses} fois`,
+                    it:`Usato ${data.uses} volte`};
+      document.getElementById('refUses').textContent = used[lang] || used.nl;
+    }
+  } catch(_) {}
+}
+
+function copyReferral() {
+  const code = document.getElementById('refCodeDisplay').textContent;
+  if (code && code !== '—') {
+    navigator.clipboard.writeText(code).catch(() => {});
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '✓';
+    setTimeout(() => {
+      btn.innerHTML = '<span data-nl>Kopiëren</span><span data-en>Copy</span><span data-de>Kopieren</span><span data-fr>Copier</span><span data-it>Copia</span>';
+    }, 1500);
+  }
+}
+
+// ── Certificaat archief ───────────────────────────────────────────────────
+async function loadCertArchive() {
+  const lang = getLang();
+  try {
+    const res  = await fetch('/api/certificates', {headers:{'X-Token': sessionToken}});
+    const data = await res.json();
+    const list = document.getElementById('archiveList');
+    if (!data.certificates || data.certificates.length === 0) {
+      const empty = {nl:'Nog geen certificaten aangemaakt.',en:'No certificates yet.',
+                     de:'Noch keine Zertifikate erstellt.',fr:'Aucun certificat encore créé.',
+                     it:'Nessun certificato ancora creato.'};
+      list.innerHTML = `<p style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);">${empty[lang]||empty.nl}</p>`;
+      return;
+    }
+    list.innerHTML = data.certificates.map(c => {
+      const date = new Date(c.created_at).toLocaleDateString(
+        lang === 'nl' ? 'nl-NL' : lang === 'de' ? 'de-DE' : lang === 'fr' ? 'fr-FR' : lang === 'it' ? 'it-IT' : 'en-GB',
+        {day:'numeric', month:'short', year:'numeric'}
+      );
+      const dl = {nl:'Download',en:'Download',de:'Herunterladen',fr:'Télécharger',it:'Scarica'};
+      return `<div class="arch-item">
+        <span><strong>${c.title || c.cert_id}</strong><br>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-muted);">${c.cert_id} · ${date}</span></span>
+        <a href="/api/certificates/${c.cert_id}?t=${sessionToken}" onclick="dlCert(event,'${c.cert_id}')">${dl[lang]||dl.nl} ↓</a>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('Archief laden mislukt', e);
+  }
+}
+
+async function dlCert(event, certId) {
+  event.preventDefault();
+  const res  = await fetch(`/api/certificates/${certId}`, {headers:{'X-Token': sessionToken}});
+  const blob = await res.blob();
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `${certId}.zip`;
+  a.click();
+}
+
+// ── Batch upload ──────────────────────────────────────────────────────────
+async function handleBatchSelect(files) {
+  if (!files || files.length === 0) return;
+  const status = document.getElementById('batchStatus');
+  const lang   = getLang();
+  status.style.display = 'block';
+  const proc = {nl:'Verwerken…',en:'Processing…',de:'Verarbeitung…',fr:'Traitement…',it:'Elaborazione…'};
+  status.style.color   = 'var(--ink-muted)';
+  status.textContent   = proc[lang] || proc.nl;
+
+  const fd = new FormData();
+  for (const f of files) fd.append('images[]', f);
+  fd.append('strength', document.getElementById('strength').value);
+  fd.append('p1',       document.getElementById('channelSplit').value);
+  fd.append('p2',       document.getElementById('freqVar').value);
+
+  try {
+    const res = await fetch('/api/protect-batch', {
+      method: 'POST',
+      headers: {'X-Token': sessionToken},
+      body: fd,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({error:'Fout'}));
+      status.style.color = 'var(--accent)';
+      status.textContent = err.error || err.message || 'Fout bij verwerken.';
+      return;
+    }
+    const done = res.headers.get('X-Processed') || files.length;
+    const blob = await res.blob();
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = `printguard_batch_${Date.now()}.zip`;
+    a.click();
+    const ok = {nl:`${done} afbeeldingen beschermd en gedownload.`,en:`${done} images protected and downloaded.`,
+                de:`${done} Bilder geschützt und heruntergeladen.`,fr:`${done} images protégées et téléchargées.`,
+                it:`${done} immagini protette e scaricate.`};
+    status.style.color = '#2e7d32';
+    status.textContent = ok[lang] || ok.nl;
+    const usg = res.headers.get('X-Usage');
+    if (usg) updateUsageBar(JSON.parse(usg));
+  } catch(e) {
+    status.style.color = 'var(--accent)';
+    status.textContent = `Fout: ${e.message}`;
+  }
+}
+
+// ── Demo (zonder account) ─────────────────────────────────────────────────
+async function runDemo(file) {
+  if (!file) return;
+  const status = document.getElementById('demoStatus');
+  const drop   = document.getElementById('demoDrop');
+  const lang   = getLang();
+  status.style.display = 'block';
+  status.style.color   = 'var(--ink-muted)';
+  const proc = {nl:'Bescherming toepassen…',en:'Applying protection…',de:'Schutz wird angewendet…',fr:'Application de la protection…',it:'Applicazione protezione…'};
+  status.textContent = proc[lang] || proc.nl;
+  drop.style.pointerEvents = 'none';
+
+  const fd = new FormData();
+  fd.append('image', file);
+  try {
+    const res = await fetch('/api/demo', {method:'POST', body: fd});
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({message:'Fout'}));
+      status.style.color = 'var(--accent)';
+      status.textContent = err.message || 'Fout bij verwerken.';
+      drop.style.pointerEvents = 'auto';
+      return;
+    }
+    const blob = await res.blob();
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'printguard_demo.png';
+    a.click();
+    const ok = {nl:'Demo gedownload! Maak een account aan voor meer uploads en een certificaat.',
+                en:'Demo downloaded! Create an account for more uploads and a certificate.',
+                de:'Demo heruntergeladen! Erstellen Sie ein Konto für mehr Uploads und ein Zertifikat.',
+                fr:'Démo téléchargée ! Créez un compte pour plus d\'uploads et un certificat.',
+                it:'Demo scaricata! Crea un account per più upload e un certificato.'};
+    status.style.color = '#2e7d32';
+    status.textContent = ok[lang] || ok.nl;
+  } catch(e) {
+    status.style.color = 'var(--accent)';
+    status.textContent = `Fout: ${e.message}`;
+  }
+  drop.style.pointerEvents = 'auto';
+  document.getElementById('demoFileInput').value = '';
 }
 
 // ── Dropzone ──────────────────────────────────────────────────────────────

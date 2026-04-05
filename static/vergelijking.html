@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrintGuard vs. Glaze vs. Nightshade — Vergelijking</title>
+<style>
+  :root { --ink:#0f0e0d; --ink-muted:#7a776f; --paper:#f7f4ef; --paper-warm:#efe9df; --border:#d0cbc3; --accent:#c8531a; --green:#2e7d32; --font-mono:'Courier New',monospace; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--paper); color:var(--ink); font-family:Georgia,serif; line-height:1.8; }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:1.5rem 3rem; border-bottom:0.5px solid var(--border); }
+  .logo { font-family:var(--font-mono); font-size:13px; letter-spacing:0.1em; text-transform:uppercase; text-decoration:none; color:var(--ink); }
+  .logo span { color:var(--accent); }
+  nav a.back { font-family:var(--font-mono); font-size:11px; color:var(--ink-muted); text-decoration:none; letter-spacing:0.05em; }
+  nav a.back:hover { color:var(--accent); }
+  .container { max-width:900px; margin:0 auto; padding:4rem 2rem 6rem; }
+  .label { font-family:var(--font-mono); font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; }
+  h1 { font-size:2rem; font-weight:300; margin-bottom:0.5rem; }
+  .intro { color:#3a3834; font-size:1rem; max-width:680px; margin:1.5rem 0 3rem; line-height:1.8; }
+  table { width:100%; border-collapse:collapse; margin-bottom:3rem; font-size:0.9rem; }
+  thead th { font-family:var(--font-mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:12px 16px; border-bottom:1.5px solid var(--border); text-align:left; color:var(--ink-muted); }
+  thead th.hl { color:var(--accent); }
+  tbody td { padding:14px 16px; border-bottom:0.5px solid var(--border); color:#3a3834; vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody td:first-child { font-family:var(--font-mono); font-size:11px; color:var(--ink); font-weight:600; }
+  .yes { color:var(--green); font-family:var(--font-mono); font-size:12px; }
+  .no  { color:#b71c1c;      font-family:var(--font-mono); font-size:12px; }
+  .part { color:#e65100;     font-family:var(--font-mono); font-size:12px; }
+  .hl-col { background:rgba(200,83,26,0.04); }
+  h2 { font-size:1.1rem; font-weight:600; margin:2.5rem 0 0.75rem; }
+  p  { color:#3a3834; margin-bottom:1rem; font-size:0.95rem; }
+  .note { font-family:var(--font-mono); font-size:10px; color:var(--ink-muted); margin-top:2rem; line-height:1.8; }
+  .cta { display:inline-block; margin-top:2rem; padding:12px 28px; background:var(--accent); color:#fff; text-decoration:none; font-family:var(--font-mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; border-radius:2px; }
+  footer { border-top:0.5px solid var(--border); padding:2rem 3rem; font-family:var(--font-mono); font-size:10px; color:var(--ink-muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+  footer a { color:var(--ink-muted); text-decoration:none; }
+  footer a:hover { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/">Print<span>Guard</span></a>
+  <a class="back" href="/">← terug naar de site</a>
+</nav>
+
+<div class="container">
+  <div class="label">Vergelijking</div>
+  <h1>PrintGuard · Glaze · Nightshade</h1>
+  <p class="intro">
+    Er bestaan meerdere tools om digitale kunst te beschermen. Ze dienen echter verschillende doeleinden.
+    Glaze en Nightshade richten zich op bescherming tegen AI-trainingsdata; PrintGuard richt zich op
+    print-bescherming én juridisch bewijs van eigendom. Hieronder een eerlijke vergelijking.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28%">Eigenschap</th>
+        <th class="hl">PrintGuard</th>
+        <th>Glaze</th>
+        <th>Nightshade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Prijs</td>
+        <td class="hl-col">Vanaf €9/maand</td>
+        <td>Gratis</td>
+        <td>Gratis</td>
+      </tr>
+      <tr>
+        <td>Wachttijd</td>
+        <td class="hl-col"><span class="yes">Seconden</span></td>
+        <td><span class="no">Minuten tot uren (queue)</span></td>
+        <td><span class="no">Minuten tot uren (queue)</span></td>
+      </tr>
+      <tr>
+        <td>Werkt in browser</td>
+        <td class="hl-col"><span class="yes">Ja — geen installatie</span></td>
+        <td><span class="no">Nee — download vereist</span></td>
+        <td><span class="no">Nee — download vereist</span></td>
+      </tr>
+      <tr>
+        <td>Werkt op mobiel</td>
+        <td class="hl-col"><span class="yes">Ja</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>Print-verstoring (inkjet/laser)</td>
+        <td class="hl-col"><span class="yes">Ja — primaire functie</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>AI-upscaler verstoring</td>
+        <td class="hl-col"><span class="yes">Ja</span></td>
+        <td><span class="part">Gedeeltelijk</span></td>
+        <td><span class="part">Gedeeltelijk</span></td>
+      </tr>
+      <tr>
+        <td>Bescherming tegen AI-training</td>
+        <td class="hl-col"><span class="part">Indirect (via pixelpatronen)</span></td>
+        <td><span class="yes">Ja — primaire functie</span></td>
+        <td><span class="yes">Ja — primaire functie</span></td>
+      </tr>
+      <tr>
+        <td>Juridisch certificaat</td>
+        <td class="hl-col"><span class="yes">Ja — SHA-256 + blockchain</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>Blockchain-tijdstempel (Bitcoin)</td>
+        <td class="hl-col"><span class="yes">Ja — OpenTimestamps</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>Onzichtbaar watermerk</td>
+        <td class="hl-col"><span class="yes">Ja — LSB + DCT (2 lagen)</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>Screenshot-bescherming</td>
+        <td class="hl-col"><span class="yes">Ja</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>Grote bestanden</td>
+        <td class="hl-col"><span class="yes">Tot 20.000px (Studio plan)</span></td>
+        <td><span class="no">Traag bij grote bestanden</span></td>
+        <td><span class="no">Traag bij grote bestanden</span></td>
+      </tr>
+      <tr>
+        <td>Certificaat-archief</td>
+        <td class="hl-col"><span class="yes">Ja — herdownload altijd mogelijk</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>Batch-verwerking</td>
+        <td class="hl-col"><span class="yes">Ja (Professional &amp; Studio)</span></td>
+        <td><span class="no">Nee</span></td>
+        <td><span class="no">Nee</span></td>
+      </tr>
+      <tr>
+        <td>Afbeeldingen opgeslagen?</td>
+        <td class="hl-col"><span class="yes">Nee — direct verwijderd</span></td>
+        <td><span class="yes">Nee</span></td>
+        <td><span class="yes">Nee</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Wanneer kies je wat?</h2>
+  <p>
+    <strong>PrintGuard</strong> is de juiste keuze als u uw kunst online publiceert en wilt voorkomen dat
+    kopieën worden afgedrukt, én als u juridisch bewijs van eigendom wilt vastleggen. De combinatie van
+    print-verstoring, onzichtbaar watermerk en blockchain-certificaat is uniek in de markt.
+  </p>
+  <p>
+    <strong>Glaze</strong> is zinvol als u specifiek wilt voorkomen dat uw stijl wordt nageboosd door
+    AI-modellen die op uw werk zijn getraind. Het heeft geen invloed op kopiëren of printen.
+  </p>
+  <p>
+    <strong>Nightshade</strong> gaat een stap verder dan Glaze: het 'vergiftigt' AI-trainingssets actief,
+    zodat modellen die op uw werk trainen beschadigde output produceren. Ook hier geen bescherming
+    tegen printen of certificering.
+  </p>
+  <p>
+    De tools sluiten elkaar niet volledig uit: sommige kunstenaars gebruiken PrintGuard voor
+    publicatie-bescherming én certificering, en Glaze/Nightshade voor AI-training-bescherming.
+  </p>
+
+  <p class="note">
+    * Wachttijden bij Glaze en Nightshade zijn afhankelijk van serverbelasting en bestandsgrootte.<br>
+    * Vergelijking gebaseerd op publiek beschikbare informatie, april 2026.
+  </p>
+
+  <a class="cta" href="/#pricing">Kies uw plan</a>
+</div>
+
+<footer>
+  <span>© 2026 MadDeco t/a PrintGuard · KVK 98239341</span>
+  <span>
+    <a href="/privacy">Privacyverklaring</a> &nbsp;·&nbsp;
+    <a href="/voorwaarden">Algemene voorwaarden</a> &nbsp;·&nbsp;
+    <a href="/#contact">Contact</a>
+  </span>
+</footer>
+
+</body>
+</html>

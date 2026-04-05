@@ -20,7 +20,6 @@ MAIL_FROM     = os.getenv("MAIL_FROM",     "PrintGuard <noreply@printguardtool.c
 
 
 def _send(to: str, subject: str, html: str) -> bool:
-    """Verstuur een e-mail via SiteGround SMTP. Geeft False terug bij fout."""
     if not MAIL_HOST or not MAIL_USER or not MAIL_PASSWORD:
         print(f"[mail] SMTP niet geconfigureerd — mail aan {to} niet verstuurd")
         return False
@@ -48,57 +47,101 @@ def _send(to: str, subject: str, html: str) -> bool:
         return False
 
 
-def send_welcome(to: str, name: str, plan: str, billing: str) -> bool:
-    plan_labels = {
-        "starter":      "Starter",
-        "professional": "Professional",
-        "studio":       "Studio",
-    }
-    billing_label = "maandelijks" if billing == "monthly" else "jaarlijks"
-    plan_label    = plan_labels.get(plan, plan.capitalize())
-
-    html = f"""
-    <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #0f0e0d;">
-      <div style="border-bottom: 1px solid #e4ddd2; padding-bottom: 24px; margin-bottom: 32px;">
-        <span style="font-family: monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
-          PRINT<span style="color: #c8531a;">GUARD</span>
+def _base(content: str) -> str:
+    return f"""
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#0f0e0d;">
+      <div style="border-bottom:1px solid #e4ddd2;padding-bottom:24px;margin-bottom:32px;">
+        <span style="font-family:monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;">
+          PRINT<span style="color:#c8531a;">GUARD</span>
         </span>
       </div>
-      <h2 style="font-weight: 300; font-size: 28px; margin: 0 0 16px;">Welkom, {name}.</h2>
-      <p style="color: #3a3834; line-height: 1.7;">
-        Uw account is actief. U heeft het <strong>{plan_label}</strong>-plan ({billing_label}).
-      </p>
-      <p style="color: #3a3834; line-height: 1.7; margin-top: 16px;">
-        Log in op <a href="https://www.printguardtool.com" style="color: #c8531a;">printguardtool.com</a>
-        om uw eerste kunstwerk te beschermen.
-      </p>
-      <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #e4ddd2;
-                  font-family: monospace; font-size: 11px; color: #7a776f; letter-spacing: 0.05em;">
+      {content}
+      <div style="margin-top:40px;padding-top:24px;border-top:1px solid #e4ddd2;
+                  font-family:monospace;font-size:11px;color:#7a776f;letter-spacing:0.05em;">
         PrintGuard · Art Protection Technology<br>
-        U ontvangt deze mail omdat u zich heeft aangemeld op printguardtool.com
+        MadDeco · Industrieweg 26 · 3738JX Maartensdijk
       </div>
     </div>
     """
-    return _send(to, f"Welkom bij PrintGuard — {plan_label}", html)
+
+
+def send_welcome(to: str, name: str, plan: str, billing: str) -> bool:
+    plan_labels  = {"basic": "Basic", "starter": "Starter",
+                    "professional": "Professional", "studio": "Studio"}
+    billing_label = "maandelijks" if billing == "monthly" else "jaarlijks"
+    plan_label    = plan_labels.get(plan, plan.capitalize())
+
+    content = f"""
+      <h2 style="font-weight:300;font-size:28px;margin:0 0 16px;">Welkom, {name}.</h2>
+      <p style="color:#3a3834;line-height:1.7;">
+        Uw account is actief. U heeft het <strong>{plan_label}</strong>-plan ({billing_label}).
+      </p>
+      <p style="color:#3a3834;line-height:1.7;margin-top:16px;">
+        Log in op <a href="https://www.printguardtool.com" style="color:#c8531a;">printguardtool.com</a>
+        om uw eerste kunstwerk te beschermen.
+      </p>
+    """
+    return _send(to, f"Welkom bij PrintGuard — {plan_label}", _base(content))
+
+
+def send_reset_email(to: str, name: str, reset_link: str) -> bool:
+    content = f"""
+      <h2 style="font-weight:300;font-size:24px;margin:0 0 16px;">Wachtwoord opnieuw instellen</h2>
+      <p style="color:#3a3834;line-height:1.7;">Hallo {name},</p>
+      <p style="color:#3a3834;line-height:1.7;">
+        Er is een verzoek gedaan om uw wachtwoord te resetten.
+        Klik op de knop hieronder om een nieuw wachtwoord in te stellen.
+        Deze link is <strong>2 uur geldig</strong>.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="{reset_link}"
+           style="background:#c8531a;color:#fff;padding:12px 28px;text-decoration:none;
+                  font-family:monospace;font-size:12px;letter-spacing:0.1em;
+                  text-transform:uppercase;border-radius:2px;">
+          Nieuw wachtwoord instellen
+        </a>
+      </div>
+      <p style="color:#7a776f;font-family:monospace;font-size:11px;line-height:1.6;">
+        Als u dit verzoek niet heeft gedaan, kunt u deze e-mail negeren.<br>
+        De link vervalt automatisch na 2 uur.
+      </p>
+    """
+    return _send(to, "PrintGuard — Wachtwoord resetten", _base(content))
+
+
+def send_cancel_confirm(to: str, name: str, plan: str, end_date: str) -> bool:
+    plan_label = plan.capitalize()
+    content = f"""
+      <h2 style="font-weight:300;font-size:24px;margin:0 0 16px;">Opzegging bevestigd</h2>
+      <p style="color:#3a3834;line-height:1.7;">Hallo {name},</p>
+      <p style="color:#3a3834;line-height:1.7;">
+        Uw <strong>{plan_label}</strong>-abonnement is opgezegd.
+        U heeft toegang tot PrintGuard tot en met <strong>{end_date}</strong>.
+      </p>
+      <p style="color:#3a3834;line-height:1.7;">
+        Wilt u zich opnieuw aanmelden? Dat kan altijd via
+        <a href="https://www.printguardtool.com" style="color:#c8531a;">printguardtool.com</a>.
+      </p>
+    """
+    return _send(to, "PrintGuard — Opzegging bevestigd", _base(content))
 
 
 def send_contact(name: str, email: str, subject: str, message: str) -> bool:
-    """Stuur een contactformulier-bericht door naar info@printguardtool.com."""
     html = f"""
-    <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #0f0e0d;">
-      <div style="border-bottom: 1px solid #e4ddd2; padding-bottom: 24px; margin-bottom: 32px;">
-        <span style="font-family: monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
-          PRINT<span style="color: #c8531a;">GUARD</span> — Contactformulier
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#0f0e0d;">
+      <div style="border-bottom:1px solid #e4ddd2;padding-bottom:24px;margin-bottom:32px;">
+        <span style="font-family:monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;">
+          PRINT<span style="color:#c8531a;">GUARD</span> — Contactformulier
         </span>
       </div>
-      <table style="width:100%; border-collapse:collapse; font-family:monospace; font-size:12px; margin-bottom:24px;">
-        <tr><td style="padding:8px 0; color:#7a776f; width:120px;">Naam</td><td style="padding:8px 0;">{name}</td></tr>
-        <tr><td style="padding:8px 0; color:#7a776f;">E-mail</td><td style="padding:8px 0;"><a href="mailto:{email}" style="color:#c8531a;">{email}</a></td></tr>
-        <tr><td style="padding:8px 0; color:#7a776f;">Onderwerp</td><td style="padding:8px 0;">{subject}</td></tr>
+      <table style="width:100%;border-collapse:collapse;font-family:monospace;font-size:12px;margin-bottom:24px;">
+        <tr><td style="padding:8px 0;color:#7a776f;width:120px;">Naam</td><td style="padding:8px 0;">{name}</td></tr>
+        <tr><td style="padding:8px 0;color:#7a776f;">E-mail</td><td style="padding:8px 0;"><a href="mailto:{email}" style="color:#c8531a;">{email}</a></td></tr>
+        <tr><td style="padding:8px 0;color:#7a776f;">Onderwerp</td><td style="padding:8px 0;">{subject}</td></tr>
       </table>
-      <div style="background:#f7f4ef; border:1px solid #e4ddd2; padding:20px; line-height:1.8; color:#3a3834; font-size:14px; white-space:pre-wrap;">{message}</div>
-      <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid #e4ddd2;
-                  font-family: monospace; font-size: 11px; color: #7a776f; letter-spacing: 0.05em;">
+      <div style="background:#f7f4ef;border:1px solid #e4ddd2;padding:20px;line-height:1.8;color:#3a3834;font-size:14px;white-space:pre-wrap;">{message}</div>
+      <div style="margin-top:40px;padding-top:24px;border-top:1px solid #e4ddd2;
+                  font-family:monospace;font-size:11px;color:#7a776f;letter-spacing:0.05em;">
         Verzonden via printguardtool.com/contact
       </div>
     </div>
