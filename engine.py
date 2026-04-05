@@ -1,16 +1,25 @@
 """
-PrintGuard Protection Engine v3
+PrintGuard Protection Engine v4
 Tiled processing — werkt met bestanden van elke grootte, ook 15.000px+.
 
 Printer-specifieke frequentieafstemming:
-  offset  → CMYK-scheiding, halftoon 150-300 LPI, hoekpatronen 15°/45°/75°
-  laser   → 600-1200 DPI clustered dot, bredere frequentiebanden
-  inkjet  → dithering (Bayer 4×4 en 8×8 matrix disruption)
-  all     → breedband aanval, treft alle printertypen + AI-upscalers
+  offset    → CMYK-scheiding, halftoon 150-300 LPI, hoekpatronen 15°/45°/75°
+  laser     → 600-1200 DPI clustered dot, bredere frequentiebanden
+  inkjet    → dithering (Bayer 4×4 en 8×8 matrix disruption)
+  photolab  → Fuji Frontier/Noritsu: highlight shoulder trap, neutrale zone
+              oscillatie, schaduwdichtheid amplificatie
+  all       → breedband aanval, treft alle printertypen + AI-upscalers
 
 Multi-frequentie aanval: in plaats van één enkele frequentie worden meerdere
 tegelijk toegepast bij gereduceerde sterkte per band (zelfde totale RMS-energie).
 Dit maakt het onmogelijk om met een eenvoudig notch-filter te filteren.
+
+Fotolabprinters (Fuji Frontier, Noritsu) gebruiken geen halftoonraster maar
+belichten fotopapier chemisch. ICC-profielen corrigeren globale kleurverschuivingen
+maar NIET ruimtelijk wisselende patronen. Die zwakke plek wordt uitgebuit via:
+  - Highlight shoulder trap: papier knipt af boven ~240 → zichtbaar stipple
+  - Neutrale zone oscillatie: R/G wissel in grijsgebieden die ICC niet oplost
+  - Schaduwdichtheid amplificatie: steile dichtheidscurve versterkt kleine shifts
 """
 
 import numpy as np
@@ -26,36 +35,42 @@ TILE_HEIGHT = 2000
 
 PRINTER_PROFILES = {
     "offset": {
-        # Offsetdruk: CMYK-scheiding, halftoonraster 150–300 LPI
-        # Bij 300 DPI = elke 2px een halftooncel → target f=2, ook f=3 en f=4
-        # Hoeken: C=15°, M=75°, Y=0°, K=45° — expliciet aangevallen
-        "freq_bands":     [2, 3, 4],
-        "channel_weight": 1.5,
-        "angle_patterns": True,
-        "bayer_patterns": False,
+        "freq_bands":      [2, 3, 4],
+        "channel_weight":  1.5,
+        "angle_patterns":  True,
+        "bayer_patterns":  False,
+        "photolab_attack": False,
     },
     "laser": {
-        # Laserprinter: 600–1200 DPI, clustered-dot halftoon
-        # Minder gevoelig voor CMYK-hoeken, wel voor middelfrequente patronen
-        "freq_bands":     [3, 5, 7],
-        "channel_weight": 1.0,
-        "angle_patterns": False,
-        "bayer_patterns": False,
+        "freq_bands":      [3, 5, 7],
+        "channel_weight":  1.0,
+        "angle_patterns":  False,
+        "bayer_patterns":  False,
+        "photolab_attack": False,
     },
     "inkjet": {
-        # Inkjet: Bayer-dithering 4×4 en 8×8, ook Floyd-Steinberg
-        # Aanval op dither-matrix harmonischen
-        "freq_bands":     [2, 4, 6],
-        "channel_weight": 0.9,
-        "angle_patterns": False,
-        "bayer_patterns": True,
+        "freq_bands":      [2, 4, 6],
+        "channel_weight":  0.9,
+        "angle_patterns":  False,
+        "bayer_patterns":  True,
+        "photolab_attack": False,
+    },
+    "photolab": {
+        # Fuji Frontier, Noritsu, CEWE, Albelli — laser-fotochemisch, geen halftoon
+        # ICC-profiel corrigeert globaal maar niet ruimtelijk wisselende patronen
+        "freq_bands":      [3, 5],
+        "channel_weight":  1.1,
+        "angle_patterns":  False,
+        "bayer_patterns":  False,
+        "photolab_attack": True,
     },
     "all": {
-        # Breedband: treft alle printertypen + AI-upscalers zoals Topaz
-        "freq_bands":     [2, 3, 4, 6, 8],
-        "channel_weight": 1.3,
-        "angle_patterns": True,
-        "bayer_patterns": True,
+        # Breedband: alle printertypen + fotolabs + AI-upscalers
+        "freq_bands":      [2, 3, 4, 6, 8],
+        "channel_weight":  1.3,
+        "angle_patterns":  True,
+        "bayer_patterns":  True,
+        "photolab_attack": True,
     },
 }
 
@@ -166,6 +181,58 @@ def _process_strip(strip, y_offset, pattern, strength, channel_split, freq_varia
         bayer8 = np.where(((X // 8) + (Y // 8)) % 2 == 0, bs8, -bs8).astype(np.int16)
         noise_g += bayer8; noise_b -= bayer8
         del bayer8
+
+    # ── Fotolab-aanval (Fuji Frontier, Noritsu, CEWE, Albelli) ───────────────
+    # ICC-profiel corrigeert globale kleurverschuivingen maar NIET ruimtelijke
+    # oscillaties. Drie aanvallen op de zwakke punten van fotochemisch printen:
+    if profile.get("photolab_attack", False):
+        R_cur = strip[:, :, 0].astype(np.int32)
+        G_cur = strip[:, :, 1].astype(np.int32)
+        B_cur = strip[:, :, 2].astype(np.int32)
+        luminance = (299 * R_cur + 587 * G_cur + 114 * B_cur) // 1000
+
+        # Aanval 1: Highlight shoulder trap
+        # Fotopapier knipt af boven ~240 → papier-wit, geen detail.
+        # Afwisselende pixels richting 255 vs 240: op scherm identiek (allebei licht),
+        # op papier: 255 = geen detail, 240 = lichte dichtheid → zichtbaar stipple.
+        hl_mask   = luminance > 218
+        hl_push   = max(6, int(strength * 0.45))
+        hl_pattern = ((X + Y) % 4 < 2)
+        hl_shift  = np.where(hl_mask,
+                        np.where(hl_pattern, hl_push, -(hl_push // 3)),
+                        0).astype(np.int16)
+        noise_r += hl_shift
+        noise_g += (hl_shift * 2 // 3).astype(np.int16)
+        noise_b += (hl_shift // 2).astype(np.int16)
+        del hl_mask, hl_pattern, hl_shift
+
+        # Aanval 2: Neutrale zone kleuroscillatie
+        # Grijsgebieden (R≈G≈B) zijn het gevoeligst voor kleurbalans op fotopapier.
+        # Warm/koel wissel op 3px: ICC corrigeert het gemiddelde (≈0) maar niet
+        # de ruimtelijke oscillatie → zichtbare kleuurtextuur in stenen/huid.
+        rg_diff   = np.abs(R_cur - G_cur)
+        rb_diff   = np.abs(R_cur - B_cur)
+        neutral   = (rg_diff < 35) & (rb_diff < 35)
+        cs_n      = max(5, int(strength * 0.55))
+        warm_cool = np.where((X + Y * 3) % 6 < 3, cs_n, -cs_n).astype(np.int16)
+        noise_r += np.where(neutral,  warm_cool,     0).astype(np.int16)
+        noise_g += np.where(neutral, -warm_cool // 2, 0).astype(np.int16)
+        del rg_diff, rb_diff, neutral, warm_cool
+
+        # Aanval 3: Schaduwdichtheid amplificatie
+        # De dichtheidscurve van fotopapier is steil in schaduwen:
+        # kleine inputverschillen → grote outputverschillen op papier.
+        # Op scherm onzichtbaar in donkere zones, op papier versterkt.
+        sh_mask  = luminance < 48
+        sh_push  = max(4, int(strength * 0.35))
+        sh_pat   = ((X * 3 + Y) % 5 < 2)
+        sh_shift = np.where(sh_mask,
+                       np.where(sh_pat, sh_push, -sh_push),
+                       0).astype(np.int16)
+        noise_r += sh_shift
+        noise_g -= (sh_shift * 3 // 4).astype(np.int16)
+        noise_b += (sh_shift // 2).astype(np.int16)
+        del sh_mask, sh_pat, sh_shift, R_cur, G_cur, B_cur, luminance
 
     del X, Y
     strip[:, :, 0] = np.clip(strip[:, :, 0] + noise_r, 0, 255)
