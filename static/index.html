@@ -424,20 +424,20 @@ body.lang-en [data-nl] { display: none !important; }
           <div>
             <div class="t-label"><span data-nl>Patroon type</span><span data-en>Pattern type</span></div>
             <select class="t-select" id="patternType">
-              <option value="hf"><span data-nl>Hoge frequentie ruis</span><span data-en>High frequency noise</span></option>
-              <option value="checker"><span data-nl>Schaakbord</span><span data-en>Checkerboard</span></option>
-              <option value="stripes"><span data-nl>Diagonale strepen</span><span data-en>Diagonal stripes</span></option>
-              <option value="channel">Channel-split (CMYK)</option>
-              <option value="combined" selected><span data-nl>Volledig gecombineerd</span><span data-en>Fully combined</span></option>
+              <option value="hf" data-nl="Hoge frequentie ruis" data-en="High frequency noise">Hoge frequentie ruis</option>
+              <option value="checker" data-nl="Schaakbord" data-en="Checkerboard">Schaakbord</option>
+              <option value="stripes" data-nl="Diagonale strepen" data-en="Diagonal stripes">Diagonale strepen</option>
+              <option value="channel" data-nl="Channel-split (CMYK)" data-en="Channel-split (CMYK)">Channel-split (CMYK)</option>
+              <option value="combined" selected data-nl="Volledig gecombineerd" data-en="Fully combined">Volledig gecombineerd</option>
             </select>
           </div>
           <div>
             <div class="t-label"><span data-nl>Doelprinter</span><span data-en>Target printer</span></div>
             <select class="t-select" id="printerTarget">
-              <option value="inkjet">Inkjet</option>
-              <option value="laser">Laser</option>
-              <option value="offset" selected><span data-nl>Offset (professioneel)</span><span data-en>Offset (professional)</span></option>
-              <option value="all"><span data-nl>Alle methodes</span><span data-en>All methods</span></option>
+              <option value="inkjet" data-nl="Inkjet" data-en="Inkjet">Inkjet</option>
+              <option value="laser" data-nl="Laser" data-en="Laser">Laser</option>
+              <option value="offset" selected data-nl="Offset (professioneel)" data-en="Offset (professional)">Offset (professioneel)</option>
+              <option value="all" data-nl="Alle methodes" data-en="All methods">Alle methodes</option>
             </select>
           </div>
         </div>
@@ -541,6 +541,10 @@ function setLang(lang) {
   document.body.className = 'lang-' + lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick*="${lang}"]`).classList.add('active');
+  // Vertalingen in select-opties bijwerken
+  document.querySelectorAll('option[data-' + lang + ']').forEach(opt => {
+    opt.textContent = opt.getAttribute('data-' + lang);
+  });
   // URL aanpassen zonder page reload
   const isNl = lang === 'nl';
   const target = isNl ? '/nl/' : '/';
