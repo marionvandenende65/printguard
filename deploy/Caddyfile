@@ -1,0 +1,14 @@
+# PrintGuard — Caddy reverse proxy met automatische Let's Encrypt SSL.
+# www = de echte site; apex redirect naar www.
+
+www.printguardtool.com {
+	reverse_proxy 127.0.0.1:5000
+	encode gzip
+	request_body {
+		max_size 100MB
+	}
+}
+
+printguardtool.com {
+	redir https://www.printguardtool.com{uri} permanent
+}

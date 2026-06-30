@@ -1,0 +1,21 @@
+[Unit]
+Description=PrintGuard Flask app (gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=printguard
+Group=printguard
+WorkingDirectory=/opt/printguard
+EnvironmentFile=/opt/printguard/.env
+ExecStart=/opt/printguard/.venv/bin/gunicorn --bind 127.0.0.1:5000 --timeout 300 --workers 2 server:app
+Restart=always
+RestartSec=3
+# Beveiliging
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/printguard
+
+[Install]
+WantedBy=multi-user.target

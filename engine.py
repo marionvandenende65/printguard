@@ -25,6 +25,11 @@ maar NIET ruimtelijk wisselende patronen. Die zwakke plek wordt uitgebuit via:
 import numpy as np
 from PIL import Image
 
+# Studio-plan verwerkt tot 20.000x20.000 (400 MP). Pillow blokkeert standaard
+# boven ~179 MP als DecompressionBomb-bescherming; verhoog de drempel zodat
+# grote kunstwerken niet met een 500-fout afketsen.
+Image.MAX_IMAGE_PIXELS = 450_000_000
+
 TILE_HEIGHT = 2000
 
 # ── Printer-profielen ─────────────────────────────────────────────────────────

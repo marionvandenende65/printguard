@@ -12,7 +12,7 @@ PrintGuard Server v5
 - Mollie checkout (actief zodra MOLLIE_API_KEY is ingesteld)
 """
 
-import io, os, time, json, zipfile, urllib.request, urllib.error
+import io, os, time, json, zipfile, secrets, urllib.request, urllib.error
 import jwt as pyjwt
 from dotenv import load_dotenv
 load_dotenv()
@@ -35,9 +35,16 @@ from users import (
 from mail import send_welcome, send_contact, send_reset_email, send_cancel_confirm
 
 app = Flask(__name__, static_folder="static")
-app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB
+app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100 MB (Cloudflare capt bodies op 100 MB)
 
-SECRET_KEY   = os.getenv("SECRET_KEY", "dev_secret_change_in_production")
+# Geen vaste, publiek bekende fallback meer: als SECRET_KEY ontbreekt gebruiken we
+# een willekeurige sleutel per proces (JWT's blijven dan onvervalsbaar; gebruikers
+# worden enkel uitgelogd bij herstart). Zet SECRET_KEY in de omgeving voor stabiele sessies.
+SECRET_KEY   = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    SECRET_KEY = secrets.token_hex(32)
+    print("[WAARSCHUWING] SECRET_KEY niet ingesteld — willekeurige sleutel gebruikt. "
+          "Sessies overleven geen herstart. Zet SECRET_KEY in de .env voor productie.")
 ADMIN_TOKEN  = os.getenv("ADMIN_TOKEN", "")
 TOKEN_DAYS   = 30
 MOLLIE_KEY   = os.getenv("MOLLIE_API_KEY", "")
@@ -341,7 +348,8 @@ def protect_batch():
 
 @app.route("/api/demo", methods=["POST"])
 def demo():
-    ip = request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip()
+    ip = (request.headers.get("CF-Connecting-IP")
+          or request.headers.get("X-Forwarded-For", request.remote_addr or "")).split(",")[0].strip()
     if not can_demo(ip):
         return jsonify({
             "error":   "demo_limit",
