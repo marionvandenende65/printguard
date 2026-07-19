@@ -32,7 +32,7 @@ from users import (
     store_certificate, list_certificates, get_certificate_zip,
     can_demo, record_demo,
 )
-from mail import send_welcome, send_contact, send_reset_email, send_cancel_confirm
+from mail import send_welcome, send_welcome_setpassword, send_contact, send_reset_email, send_cancel_confirm
 
 app = Flask(__name__, static_folder="static")
 app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100 MB (Cloudflare capt bodies op 100 MB)
@@ -685,7 +685,14 @@ def mollie_webhook():
             name = email.split("@")[0].capitalize()
             create_user(email, _random_password(), name, plan, billing,
                         referred_by=ref)
-            send_welcome(email, name, plan, billing)
+            # Klant kent het (willekeurige) wachtwoord niet — stuur een
+            # instel-wachtwoord-link mee zodat hij direct kan inloggen.
+            token = create_reset_token(email)
+            if token:
+                link = f"{SITE_URL}/reset-password?token={token}"
+                send_welcome_setpassword(email, name, plan, billing, link)
+            else:
+                send_welcome(email, name, plan, billing)
 
     except Exception as e:
         print(f"[mollie-webhook] Fout: {e}")

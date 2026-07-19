@@ -8,7 +8,7 @@ Configureer via .env:
   MAIL_FROM     PrintGuard <noreply@printguardtool.com>
 """
 
-import smtplib, ssl, os
+import smtplib, ssl, os, html
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -84,6 +84,42 @@ def send_welcome(to: str, name: str, plan: str, billing: str) -> bool:
     return _send(to, f"Welkom bij PrintGuard — {plan_label}", _base(content))
 
 
+def send_welcome_setpassword(to: str, name: str, plan: str, billing: str, setpw_link: str) -> bool:
+    """Welkomstmail ná betaling: bevat een link waarmee de klant zelf zijn
+    wachtwoord instelt en direct kan inloggen."""
+    plan_labels  = {"basic": "Basic", "starter": "Starter",
+                    "professional": "Professional", "studio": "Studio",
+                    "design_professional": "DesignGuard Professional",
+                    "design_studio": "DesignGuard Studio"}
+    billing_label = "maandelijks" if billing == "monthly" else "jaarlijks"
+    plan_label    = plan_labels.get(plan, plan.capitalize())
+
+    content = f"""
+      <h2 style="font-weight:300;font-size:28px;margin:0 0 16px;">Welkom, {html.escape(name)}.</h2>
+      <p style="color:#3a3834;line-height:1.7;">
+        Bedankt voor uw aanmelding. Uw <strong>{plan_label}</strong>-plan ({billing_label}) is actief.
+      </p>
+      <p style="color:#3a3834;line-height:1.7;margin-top:16px;">
+        Stel eerst uw wachtwoord in via de knop hieronder — daarna kunt u direct inloggen.
+        Deze link is <strong>2 uur geldig</strong>.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="{setpw_link}"
+           style="background:#c8531a;color:#fff;padding:12px 28px;text-decoration:none;
+                  font-family:monospace;font-size:12px;letter-spacing:0.1em;
+                  text-transform:uppercase;border-radius:2px;">
+          Wachtwoord instellen &amp; inloggen
+        </a>
+      </div>
+      <p style="color:#7a776f;font-family:monospace;font-size:11px;line-height:1.6;">
+        Werkt de link niet meer? Ga naar
+        <a href="https://www.printguardtool.com" style="color:#c8531a;">printguardtool.com</a>
+        en kies "Wachtwoord vergeten" met dit e-mailadres.
+      </p>
+    """
+    return _send(to, f"Welkom bij PrintGuard — stel uw wachtwoord in", _base(content))
+
+
 def send_reset_email(to: str, name: str, reset_link: str) -> bool:
     content = f"""
       <h2 style="font-weight:300;font-size:24px;margin:0 0 16px;">Wachtwoord opnieuw instellen</h2>
@@ -127,7 +163,12 @@ def send_cancel_confirm(to: str, name: str, plan: str, end_date: str) -> bool:
 
 
 def send_contact(name: str, email: str, subject: str, message: str) -> bool:
-    html = f"""
+    # Escape gebruikersinvoer — voorkomt HTML/mail-injectie in de mail naar de beheerder
+    name    = html.escape(name)
+    email   = html.escape(email)
+    subject = html.escape(subject)
+    message = html.escape(message)
+    html_body = f"""
     <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#0f0e0d;">
       <div style="border-bottom:1px solid #e4ddd2;padding-bottom:24px;margin-bottom:32px;">
         <span style="font-family:monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;">
@@ -146,4 +187,4 @@ def send_contact(name: str, email: str, subject: str, message: str) -> bool:
       </div>
     </div>
     """
-    return _send("info@printguardtool.com", f"[PrintGuard contact] {subject}", html)
+    return _send("info@printguardtool.com", f"[PrintGuard contact] {subject}", html_body)

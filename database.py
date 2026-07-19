@@ -6,7 +6,21 @@ import sqlite3, os
 import bcrypt
 import datetime
 
-DB_PATH = os.getenv("DATABASE_PATH", "printguard.db")
+# Databasepad. Volgorde:
+#   1. DATABASE_PATH uit de omgeving (expliciet ingesteld) — leidend
+#   2. /data/printguard.db als er een Railway-volume op /data gekoppeld is
+#      (Railway's schijf is ANDERS vluchtig: zonder volume verdwijnt de DB
+#       — dus alle gebruikers/certificaten — bij elke nieuwe deploy)
+#   3. lokaal printguard.db (ontwikkeling op de eigen pc)
+def _default_db_path() -> str:
+    env = os.getenv("DATABASE_PATH")
+    if env:
+        return env
+    if os.path.isdir("/data"):
+        return "/data/printguard.db"
+    return "printguard.db"
+
+DB_PATH = _default_db_path()
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (

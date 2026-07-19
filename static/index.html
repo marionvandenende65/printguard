@@ -417,7 +417,7 @@ body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lan
         <li class="price-feature"><span data-nl>Tot 4.000px breedte</span><span data-en>Up to 4,000px wide</span></li>
         <li class="price-feature">PNG export</li>
       </ul>
-      <button class="btn-plan" data-plan="basic"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
+      <button class="btn-plan" data-plan="basic" onclick="buyPlan('basic')"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
     </div>
     <div class="price-card">
       <div class="price-label">Starter</div>
@@ -431,7 +431,7 @@ body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lan
         <li class="price-feature"><span data-nl>Alle patroon algoritmes</span><span data-en>All pattern algorithms</span></li>
         <li class="price-feature">PNG export</li>
       </ul>
-      <button class="btn-plan" data-plan="starter"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
+      <button class="btn-plan" data-plan="starter" onclick="buyPlan('starter')"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
     </div>
     <div class="price-card featured">
       <div class="price-badge"><span data-nl>Populairst</span><span data-en>Most popular</span></div>
@@ -447,7 +447,7 @@ body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lan
         <li class="price-feature">CMYK channel-split</li>
         <li class="price-feature"><span data-nl>Batch verwerking</span><span data-en>Batch processing</span></li>
       </ul>
-      <button class="btn-plan"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
+      <button class="btn-plan" data-plan="professional" onclick="buyPlan('professional')"><span data-nl>Beginnen</span><span data-en>Get started</span></button>
     </div>
     <div class="price-card">
       <div class="price-label">Studio</div>
@@ -461,7 +461,7 @@ body.lang-it [data-nl], body.lang-it [data-en], body.lang-it [data-de], body.lan
         <li class="price-feature"><span data-nl>Prioriteit support</span><span data-en>Priority support</span></li>
         <li class="price-feature">SLA <span data-nl>garantie</span><span data-en>guarantee</span></li>
       </ul>
-      <button class="btn-plan"><span data-nl>Contact opnemen</span><span data-en>Contact us</span></button>
+      <button class="btn-plan" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})"><span data-nl>Contact opnemen</span><span data-en>Contact us</span></button>
     </div>
   </div>
 </section>
@@ -1568,6 +1568,41 @@ async function submitContact(event) {
   }
   btn.disabled  = false;
   btn.innerHTML = '<span data-nl>Versturen</span><span data-en>Send message</span>';
+}
+
+// ── Abonnement kopen (checkout via Mollie) ─────────────────────────────────
+async function buyPlan(plan) {
+  const nl = (lang !== 'en');
+  const email = (prompt(nl
+      ? 'Vul je e-mailadres in om je ' + plan + '-abonnement te starten:'
+      : 'Enter your email to start your ' + plan + ' plan:') || '').trim();
+  if (!email) return;
+  if (!email.includes('@')) {
+    alert(nl ? 'Voer een geldig e-mailadres in.' : 'Please enter a valid email address.');
+    return;
+  }
+  try {
+    const res = await fetch('/api/checkout', {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify({plan: plan, billing: 'monthly', email: email})
+    });
+    const data = await res.json();
+    if (data.ok && data.checkout_url) {
+      window.location.href = data.checkout_url;         // door naar Mollie-betaalpagina
+    } else if (data.pending) {
+      alert(data.message || (nl
+        ? 'Betalingen worden binnenkort geactiveerd. Neem contact op via info@printguardtool.com.'
+        : 'Payments will be enabled soon. Please contact info@printguardtool.com.'));
+    } else {
+      alert(data.error || (nl
+        ? 'Er ging iets mis. Probeer het later opnieuw.'
+        : 'Something went wrong. Please try again later.'));
+    }
+  } catch (e) {
+    alert(nl ? 'Netwerkfout. Probeer het later opnieuw.'
+             : 'Network error. Please try again later.');
+  }
 }
 </script>
 </body>
